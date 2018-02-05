@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define TILESIZE 20
+#define ROW 20
+#define COL 25
+
 
 typedef struct {
   float x;
@@ -27,13 +31,32 @@ typedef struct {
 
 int width = 600, height = 600;
 Player player;
-Plateform ground[2];
+//ATTENTION: la map est dessinée à l'envers
+int map[ROW][COL] ={{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
 
 
 void changeSize(int w, int h) {
   width = w;
   height = h;
-  ground[0].width = width;
   glViewport (0, 0, (GLsizei)width, (GLsizei)height);
 
   glMatrixMode (GL_PROJECTION);
@@ -57,18 +80,31 @@ void drawRect(float x, float y, float width, float height) {
   glEnd();
 }
 
+int calculateYMin(int playerRow, int playerCol, playerCol2) {
+  for(int i = playerRow - 1; i >= 0; i--) {
+    if(map[i][playerCol] == 1 || map[i][playerCol2] == 1) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 
 void movePlayer() {
+  int yMin, playerRow, playerCol, playerCol2;
+  playerRow = (int) player.y / TILESIZE;
+  playerCol = (int) player.x / TILESIZE;
+  playerCol2 = (int) (player.x + player.size) / TILESIZE;
+
+  yMin = calculateYMin(playerRow, playerCol, playerCol2) * TILESIZE + TILESIZE;
+
+
   player.ySpeed -= 0.5f;
   player.y = player.y + player.ySpeed;
 
-  if(player.ySpeed < 0) {
-    for(int i = 0; i < 2; i++) {
-      if(player.y <= ground[i].y + ground[i].height && player.y >= ground[i].y + ground[i].height - 2.0f) {
-        player.y = ground[i].y + ground[i].height;
-        player.ySpeed = 0.0f;
-      }
-    }
+  if(player.y <= yMin) {
+    player.y = yMin;
+    player.ySpeed = 0.0f;
   }
 
   player.x += player.xSpeed;
@@ -94,8 +130,14 @@ void renderScene(void) {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   glColor3f(0.9f, 0.9f, 0.9f);
-  drawRect(ground[0].x, ground[0].y, ground[0].width, ground[0].height);
-  drawRect(ground[1].x, ground[1].y, ground[1].width, ground[1].height);
+  for(int col = 0; col < COL; col++) {
+    for(int row = 0; row < ROW; row++) {
+      if(map[row][col] == 1) {
+        drawRect(col*TILESIZE, row*TILESIZE, TILESIZE, TILESIZE);
+      }
+    }
+  }
+
   glColor3f(1.0f, 0.6f, 0.0f);
   drawRect(player.x, player.y, player.size, player.size);
 
@@ -107,8 +149,10 @@ void processNormalKeys(unsigned char key, int x, int y) {
   switch(key) {
     case 27:
       exit(0);
+    case 32:
+      player.ySpeed = 0.0f;
     default:
-      printf("%c", key);
+      printf("%i", key);
   }
 }
 
@@ -116,12 +160,14 @@ void processNormalKeys(unsigned char key, int x, int y) {
 void processSpecialKeys(int key, int x, int y) {
   switch(key) {
     case GLUT_KEY_RIGHT:
-      player.xSpeed = 12.0f;
+      player.xSpeed = 8.0f;
       break;
     case GLUT_KEY_LEFT:
-      player.xSpeed = -12.0f;
+      player.xSpeed = -8.0f;
       break;
     case GLUT_KEY_UP:
+      //player.y += 2.0f;
+      //printf("%f\n", player.y);
       player.ySpeed += 10.0f;
       break;
     case GLUT_KEY_DOWN:
@@ -132,21 +178,15 @@ void processSpecialKeys(int key, int x, int y) {
 
 
 int main(int argc, char **argv) {
+  width = TILESIZE * COL;
+  height = TILESIZE * ROW;
   player.x = 100.0f;
   player.y = 200.0f;
   player.size = 20.0f;
   player.ySpeed = 0.0f;
   player.xSpeed = 0.0f;
 
-  ground[0].x = 0.0f;
-  ground[0].y = 0.0f;
-  ground[0].width = width;
-  ground[0].height = 20.0f;
 
-  ground[1].x = 0.0f;
-  ground[1].y = 400.0f;
-  ground[1].width = width;
-  ground[1].height = 20.0f;
 
   // init GLUT and create Window
   glutInit(&argc, argv);
