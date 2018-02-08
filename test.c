@@ -6,11 +6,19 @@
 #endif
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define TILESIZE 20
 #define ROW 20
 #define COL 25
+#define MAXBUBBLE 4
 
+typedef struct {
+  float x;
+  float y;
+  float xSpeed;
+  float ySpeed;
+} Bubble;
 
 typedef struct {
   float x;
@@ -18,18 +26,13 @@ typedef struct {
   float size;
   float ySpeed;
   float xSpeed;
+  Bubble bubbles[MAXBUBBLE];
+  int nbBubble;
+  bool isFacingRight;
 } Player;
 
 
-typedef struct {
-  float x;
-  float y;
-  float width;
-  float height;
-} Plateform;
-
-
-int width = 600, height = 600;
+int width, height, yMin = 0;
 Player player;
 //ATTENTION: la map est dessinée à l'envers
 int map[ROW][COL] ={{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -91,7 +94,7 @@ int calculateYMin(int playerRow, int playerCol, playerCol2) {
 
 
 void movePlayer() {
-  int yMin, playerRow, playerCol, playerCol2;
+  int playerRow, playerCol, playerCol2;
   playerRow = (int) player.y / TILESIZE;
   playerCol = (int) player.x / TILESIZE;
   playerCol2 = (int) (player.x + player.size) / TILESIZE;
@@ -116,10 +119,29 @@ void movePlayer() {
 }
 
 
+void removeBubble(int n) {
+  for(int i = n; i < player.nbBubble - 1; i++) {
+    player.bubbles[i] = player.bubbles[i+1];
+  }
+  player.nbBubble--;
+}
+
+
+void moveBubbles() {
+  for(int i = 0; i < player.nbBubble; i++) {
+    player.bubbles[i].x += player.bubbles[i].xSpeed;
+    if(player.bubbles[i].x > width || player.bubbles[i].x < 0) {
+      removeBubble(i);
+    }
+  }
+}
+
+
 void physics(int timer) {
   glutTimerFunc(16, physics, ++timer);
 
   movePlayer();
+  moveBubbles();
 
   glutPostRedisplay();
 }
@@ -138,10 +160,29 @@ void renderScene(void) {
     }
   }
 
+  glColor3f(0.2f, 0.2f, 0.9f);
+  for(int i = 0; i < player.nbBubble; i++) {
+    drawRect(player.bubbles[i].x, player.bubbles[i].y, TILESIZE, TILESIZE);
+  }
+
   glColor3f(1.0f, 0.6f, 0.0f);
   drawRect(player.x, player.y, player.size, player.size);
 
   glFlush();
+}
+
+
+Bubble initBubble() {
+  Bubble bubble;
+  bubble.x = player.x;
+  bubble.y = player.y;
+  bubble.ySpeed = 0.0f;
+  if(player.isFacingRight) {
+    bubble.xSpeed = 5.0f;
+  } else {
+    bubble.xSpeed = -5.0f;
+  }
+  return bubble;
 }
 
 
@@ -150,7 +191,11 @@ void processNormalKeys(unsigned char key, int x, int y) {
     case 27:
       exit(0);
     case 32:
-      player.ySpeed = 0.0f;
+      if(player.nbBubble < MAXBUBBLE) {
+        player.bubbles[player.nbBubble] = initBubble();
+        player.nbBubble++;
+      }
+      break;
     default:
       printf("%i", key);
   }
@@ -161,14 +206,16 @@ void processSpecialKeys(int key, int x, int y) {
   switch(key) {
     case GLUT_KEY_RIGHT:
       player.xSpeed = 8.0f;
+      player.isFacingRight = true;
       break;
     case GLUT_KEY_LEFT:
       player.xSpeed = -8.0f;
+      player.isFacingRight = false;
       break;
     case GLUT_KEY_UP:
-      //player.y += 2.0f;
-      //printf("%f\n", player.y);
-      player.ySpeed += 10.0f;
+      if(player.y == yMin) {
+        player.ySpeed += 10.0f;
+      }
       break;
     case GLUT_KEY_DOWN:
       player.y -= 1.0f;
@@ -180,12 +227,13 @@ void processSpecialKeys(int key, int x, int y) {
 int main(int argc, char **argv) {
   width = TILESIZE * COL;
   height = TILESIZE * ROW;
-  player.x = 100.0f;
-  player.y = 200.0f;
+  player.x = 50.0f;
+  player.y = 50.0f;
   player.size = 20.0f;
   player.ySpeed = 0.0f;
   player.xSpeed = 0.0f;
-
+  player.isFacingRight = true;
+  player.nbBubble = 0;
 
 
   // init GLUT and create Window
