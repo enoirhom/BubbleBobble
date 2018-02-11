@@ -95,8 +95,8 @@ int calculateYMin(int playerRow, int playerCol, playerCol2) {
 
 void movePlayer() {
   int playerRow, playerCol, playerCol2;
-  playerRow = (int) player.y / TILESIZE;
-  playerCol = (int) player.x / TILESIZE;
+  playerRow = (int) player.y / TILESIZE);
+  playerCol = (int) player.x / TILESIZE);
   playerCol2 = (int) (player.x + player.size) / TILESIZE;
 
   yMin = calculateYMin(playerRow, playerCol, playerCol2) * TILESIZE + TILESIZE;
@@ -130,7 +130,7 @@ void removeBubble(int n) {
 void moveBubbles() {
   for(int i = 0; i < player.nbBubble; i++) {
     player.bubbles[i].x += player.bubbles[i].xSpeed;
-    if(player.bubbles[i].x > width || player.bubbles[i].x < 0) {
+    if(player.bubbles[i].x > width || player.bubbles[i].x < -TILESIZE) {
       removeBubble(i);
     }
   }
