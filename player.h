@@ -8,6 +8,7 @@ typedef struct {
   float y;
   float xSpeed;
   float ySpeed;
+  float yMin;
   float size;
   bool isFacingRight;
 } Player;

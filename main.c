@@ -19,6 +19,7 @@ void specialKeyPressed(int key, int x, int y);
 void specialKeyReleased(int key, int x, int y);
 
 Game *gamePtr;
+bool leftKeyPressed = false, rightKeyPressed = false, gamePaused = false;
 
 int main(int argc, char **argv) {
   gamePtr = loadGame();
@@ -34,6 +35,7 @@ int main(int argc, char **argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(changeSize);
   glutTimerFunc(0, computePhysics, 0);
+  glutTimerFunc(0, computePhysics, 1);
   glutKeyboardFunc(keyPressed);
   glutSpecialFunc(specialKeyPressed);
   glutSpecialUpFunc(specialKeyReleased);
@@ -50,6 +52,7 @@ void display(void) {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   displayWalls(gamePtr->map);
+  displayEnemies(gamePtr->enemies, gamePtr->nbEnemy);
   displayPlayer(gamePtr->player);
 
   glFlush();
@@ -57,12 +60,25 @@ void display(void) {
 
 // Calculate the new position of the elements every 16ms. Ask for a redraw at the end
 void computePhysics(int timer) {
-  //Recall computePhysics in 16ms
-  glutTimerFunc(16, computePhysics, 0);
+  if(timer == 0) {
+    //Recall computePhysics in 16ms
+    glutTimerFunc(16, computePhysics, 0);
 
-  movePlayer(&gamePtr->player, gamePtr->map);
+    movePlayer(&gamePtr->player, gamePtr->map);
+    moveEnemies(gamePtr->enemies, gamePtr->nbEnemy, gamePtr->map);
 
-  glutPostRedisplay();
+    for(int i = 0; i < gamePtr->nbEnemy; i++) {
+      if(collidesWithEnemy(gamePtr->player, gamePtr->enemies[i])) {
+        gamePtr->enemies[i].isTrapped = true;
+      }
+    }
+
+    glutPostRedisplay();
+  } else if(timer == 1) {
+    glutTimerFunc(400, computePhysics, 1);
+    findEnemiesDirection(gamePtr->enemies, gamePtr->nbEnemy, gamePtr->player);
+  }
+
 }
 
 void changeSize(int w, int h) {
@@ -86,10 +102,42 @@ void keyPressed(unsigned char key, int x, int y) {
 }
 
 void specialKeyPressed(int key, int x, int y) {
-
+  switch (key) {
+    case GLUT_KEY_UP :
+      if(gamePtr->player.y == gamePtr->player.yMin) {
+        gamePtr->player.ySpeed = 10.0;
+      }
+      break;
+    case GLUT_KEY_LEFT:
+      leftKeyPressed = true;
+      gamePtr->player.xSpeed = -5.0;
+      break;
+    case GLUT_KEY_RIGHT:
+      rightKeyPressed = true;
+      gamePtr->player.xSpeed = 5.0;
+      break;
+  }
 }
 
 
 void specialKeyReleased(int key, int x, int y) {
-
+  switch (key) {
+    case GLUT_KEY_LEFT:
+      if(rightKeyPressed) {
+        gamePtr->player.xSpeed = 5.0;
+      } else {
+        gamePtr->player.xSpeed = 0.0;
+      }
+      leftKeyPressed = false;
+      break;
+    case GLUT_KEY_RIGHT:
+      if(leftKeyPressed) {
+        gamePtr->player.xSpeed = -5.0;
+      } else {
+        gamePtr->player.xSpeed = 0.0;
+      }
+      rightKeyPressed = false;
+      break;
+  }
 }
+
