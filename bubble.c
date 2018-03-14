@@ -2,7 +2,7 @@
 #include "bubble.h"
 
 
-Bubble creatBubble(float x, float y, bool isGoingRight) {
+Bubble createBubble(float x, float y, bool isGoingRight) {
 	Bubble bubble;
 
 	bubble.x = x;
@@ -20,26 +20,23 @@ Bubble creatBubble(float x, float y, bool isGoingRight) {
 	return bubble;
 }
 
-void removeBubble(Bubble bubbles[], int *nbBubble, int bubble) {
-	bubbles[bubble] = bubbles[*nbBubble];
-	(*nbBubble) --;
-}
+void moveBubbles(BubbleNode *bubbleListptr) {
+	BubbleNode *element = bubbleListptr->nextBubbleptr;
 
-void moveBubbles(Bubble bubbles[], int *nbBubble) {
-	int i = 0;
-
-	while(i < *nbBubble) {
-		Bubble *bubble = &bubbles[i];
+	while(element != bubbleListptr) {
+		Bubble *bubble = &element->data;
 		bubble->x += bubble->xSpeed;
 		bubble->y += bubble->ySpeed;
-		bubbles->duration -= 1;
-
-
+		bubble->duration -= 1;
 
 		if(bubble->xSpeed > 0) {
 			bubble->xSpeed -= 0.4;
-		} else if(bubbles->xSpeed < 0) {
+		} else if(bubble->xSpeed < 0) {
 			bubble->xSpeed += 0.4;
+		}
+
+		if(bubble->xSpeed > -0.5 && bubble->xSpeed < 0.5) {
+			bubble->xSpeed = 0.0;
 		}
 
 		if(bubble->x < 20.0) {
@@ -51,9 +48,9 @@ void moveBubbles(Bubble bubbles[], int *nbBubble) {
 		}
 
 		if(bubble->duration <= 0) {
-			removeBubble(bubbles, nbBubble, i);
+			element = removeBubbleElement(element);
 		} else {
-			i++;
+			element = element->nextBubbleptr;
 		}
 	}
 }
@@ -73,17 +70,17 @@ BubbleNode *newBubbleList(void) {
 	return bubbleNodeptr;
 }
 
-void addBubbleElement(BubbleNode *bubbleListptr, Bubble bubble) {
+void addBubbleElement(BubbleNode *bubbleNodeptr, Bubble bubble) {
 	BubbleNode *newNode = malloc(sizeof(BubbleNode));
 	newNode->data = bubble;
 
-	bubbleListptr->nextBubbleptr->prevBubbleptr = newNode;
-	newNode->nextBubbleptr = bubbleListptr->nextBubbleptr;
-	newNode->prevBubbleptr = bubbleListptr;
-	bubbleListptr->nextBubbleptr = newNode;
+	bubbleNodeptr->nextBubbleptr->prevBubbleptr = newNode;
+	newNode->nextBubbleptr = bubbleNodeptr->nextBubbleptr;
+	newNode->prevBubbleptr = bubbleNodeptr;
+	bubbleNodeptr->nextBubbleptr = newNode;
 }
 
-void removeBubbleElement(BubbleNode *bubbleNodeptr) {
+BubbleNode *removeBubbleElement(BubbleNode *bubbleNodeptr) {
 	BubbleNode *prevElemptr, *nextElemptr;
 	prevElemptr = bubbleNodeptr->prevBubbleptr;
 	nextElemptr = bubbleNodeptr->nextBubbleptr;
@@ -92,6 +89,8 @@ void removeBubbleElement(BubbleNode *bubbleNodeptr) {
 	nextElemptr->prevBubbleptr = prevElemptr;
 
 	free(bubbleNodeptr);
+
+	return nextElemptr;
 }
 
 

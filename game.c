@@ -7,22 +7,22 @@
 
 // Create a new Game or load one if the file already exists
 Game *loadGame() {
-  Game *gamePtr;
-  gamePtr = malloc(sizeof(Game));
+  Game *gameptr;
+  gameptr = malloc(sizeof(Game));
 
-  gamePtr->player = (Player){.x = 50.0, .y = 150.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true};
-  gamePtr->enemies[0] = (Enemy){.x = 400.0, .y = 300, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false};
-  gamePtr->enemies[1] = (Enemy){.x = 160.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false};
-  gamePtr->enemies[2] = (Enemy){.x = 200.0, .y = 300, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false};
-  gamePtr->enemies[3] = (Enemy){.x = 230.0, .y = 100, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false};
-  gamePtr->nbEnemy = 4;
-  gamePtr->nbBubble = 0;
-  gamePtr->score = 0;
-  gamePtr->lives = 3;
-  gamePtr->level = 1;
-  gamePtr->map = loadMap(gamePtr->level);
+  gameptr->player = (Player){.x = 50.0, .y = 150.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true};
+  gameptr->enemyListptr = newEnemyList();
+  addEnemyElement(gameptr->enemyListptr, (Enemy){.x = 400.0, .y = 300, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false});
+  addEnemyElement(gameptr->enemyListptr, (Enemy){.x = 160.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false});
+  addEnemyElement(gameptr->enemyListptr, (Enemy){.x = 200.0, .y = 300, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false});
+  addEnemyElement(gameptr->enemyListptr, (Enemy){.x = 230.0, .y = 100, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false});
+  gameptr->bubbleListptr = newBubbleList();
+  gameptr->score = 0;
+  gameptr->lives = 3;
+  gameptr->level = 1;
+  gameptr->map = loadMap(gameptr->level);
 
-  return gamePtr;
+  return gameptr;
 }
 
 // Load the map from a textfile depending on the level
@@ -72,11 +72,9 @@ bool bubbleCollidesWithEnemy(Bubble bubble, Enemy enemy) {
   return !(bubble.x > (enemy.x + enemy.size) || (bubble.x + bubble.size) < enemy.x || bubble.y > (enemy.y + enemy.size) || (bubble.y + bubble.size) < enemy.y);
 }
 
-void addBubble(Game *game) {
-  if(game->nbBubble < 50) {
-    game->bubbles[game->nbBubble] = creatBubble(game->player.x, game->player.y, game->player.isFacingRight);
-    game->nbBubble++;
-  }
+void addBubble(Game *gameptr) {
+  Bubble bubble = createBubble(gameptr->player.x, gameptr->player.y, gameptr->player.isFacingRight);
+  addBubbleElement(gameptr->bubbleListptr, bubble);
 }
 
 

@@ -5,8 +5,8 @@
 
 
 void displayPlayer(Player player);
-void displayEnemies(Enemy enemies[], int nbEnemy);
-void displayBubbles(Bubble bubbles[], int nbBubble);
+void displayEnemies(EnemyNode *enemyListptr);
+void displayBubbles(BubbleNode *bubbleListptr);
 void displayWalls(char *map);
 
 #endif

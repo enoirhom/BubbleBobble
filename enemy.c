@@ -1,3 +1,5 @@
+
+#include <stdlib.h>
 #include "enemy.h"
 
 
@@ -20,49 +22,87 @@ void enemyIsHit(Enemy *enemyptr) {
   enemyptr->isTrapped = true;
 }
 
-void moveEnemies(Enemy enemies[], int nbEnemy, char *map) {
-  int i = 0;
+void moveEnemies(EnemyNode *enemyListptr, char *map) {
+  EnemyNode *element = enemyListptr->nextEnemyptr;
 
-  while(i < nbEnemy) {
-    if(!enemies[i].isTrapped) {
-      enemies[i].yMin = enemyCalculateYMin(enemies[i], map);
+  while(element != enemyListptr) {
+    Enemy *enemy = &element->data;
+    if(!enemy->isTrapped) {
+      enemy->yMin = enemyCalculateYMin(*enemy, map);
 
       // Move the enemy depending on its speeds
-      enemies[i].x += enemies[i].xSpeed;
-      enemies[i].ySpeed -= 0.5;
-      enemies[i].y += enemies[i].ySpeed;
+      enemy->x += enemy->xSpeed;
+      enemy->ySpeed -= 0.5;
+      enemy->y += enemy->ySpeed;
  
-      // Stop the enemy from going under platform
-      if(enemies[i].y <= enemies[i].yMin) {
-        enemies[i].y = enemies[i].yMin;
-        enemies[i].ySpeed = 0.0;
+      // Stop the enemy from going under platforms
+      if(enemy->y <= enemy->yMin) {
+        enemy->y = enemy->yMin;
+        enemy->ySpeed = 0.0;
       }
     } else {
-      enemies[i].x += enemies[i].xSpeed;
-      enemies[i].y += enemies[i].ySpeed;
+      enemy->x += enemy->xSpeed;
+      enemy->y += enemy->ySpeed;
     }
-    i++;
+    element = element->nextEnemyptr;
   }
 }
 
-void findEnemiesDirection(Enemy enemies[], int nbEnemy, Player player) {
-  int i = 0;
+void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
+  EnemyNode *element = enemyListptr->nextEnemyptr;
 
-  while(i < nbEnemy) {
-    if(!enemies[i].isTrapped){
-      if(enemies[i].x < player.x) {
-        enemies[i].xSpeed = 1.0;
+  while(element != enemyListptr) {
+    Enemy *enemy = &element->data;
+    if(!enemy->isTrapped){
+      if(enemy->x < player.x) {
+        enemy->xSpeed = 1.0;
       } else {
-        enemies[i].xSpeed = -1.0;
+        enemy->xSpeed = -1.0;
       }
 
-      if(enemies[i].y < player.y && enemies[i].y == enemies[i].yMin) {
-        enemies[i].ySpeed = 10;
+      if(enemy->y < player.y && enemy->y == enemy->yMin) {
+        enemy->ySpeed = 10;
       }
-
-      //enemies[i].isTrapped = false;
     }
 
-    i++;
+    element = element->nextEnemyptr;
   }
+}
+
+EnemyNode *newEnemyList(void) {
+  EnemyNode *enemyNodeptr;
+  enemyNodeptr = malloc(sizeof(EnemyNode));
+
+  if(enemyNodeptr == NULL) {
+    return NULL;
+  } else {
+    enemyNodeptr->data = (Enemy){.x = 0.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .size = 0.0, .isTrapped = true};
+    enemyNodeptr->nextEnemyptr = enemyNodeptr;
+    enemyNodeptr->prevEnemyptr = enemyNodeptr;
+  }
+
+  return enemyNodeptr;
+}
+
+void addEnemyElement(EnemyNode *enemyNodeptr, Enemy enemy) {
+  EnemyNode *newNode = malloc(sizeof(EnemyNode));
+  newNode->data = enemy;
+
+  enemyNodeptr->nextEnemyptr->prevEnemyptr = newNode;
+  newNode->nextEnemyptr = enemyNodeptr->nextEnemyptr;
+  newNode->prevEnemyptr = enemyNodeptr;
+  enemyNodeptr->nextEnemyptr = newNode;
+}
+
+EnemyNode *removeEnemyElement(EnemyNode *enemyNodeptr) {
+  EnemyNode *prevElemptr, *nextElemptr;
+  prevElemptr = enemyNodeptr->prevEnemyptr;
+  nextElemptr = enemyNodeptr->nextEnemyptr;
+
+  prevElemptr->nextEnemyptr = nextElemptr;
+  nextElemptr->prevEnemyptr = prevElemptr;
+
+  free(enemyNodeptr);
+
+  return nextElemptr;
 }

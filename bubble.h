@@ -22,11 +22,10 @@ typedef struct bubbleNode BubbleNode;
 
 
 
-Bubble creatBubble(float x, float y, bool isGoingRight);
-void moveBubbles(Bubble bubbles[], int *nbBubble);
-void removeBubble(Bubble bubbles[], int *nbBubble, int bubble);
+Bubble createBubble(float x, float y, bool isGoingRight);
+void moveBubbles(BubbleNode *bubbleListptr);
 BubbleNode *newBubbleList(void);
 void addBubbleElement(BubbleNode *bubbleNodeptr, Bubble bubble);
-void removeBubbleElement(BubbleNode *bubbleNodeptr);
+BubbleNode *removeBubbleElement(BubbleNode *bubbleNodeptr);
 
 #endif

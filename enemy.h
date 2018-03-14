@@ -14,8 +14,19 @@ typedef struct {
   bool isTrapped;
 } Enemy;
 
-void moveEnemies(Enemy enemies[], int nbEnemy, char *map);
-void findEnemiesDirection(Enemy enemies[], int nbEnemy, Player player);
+struct enemyNode {
+	Enemy data;
+	struct enemyNode *nextEnemyptr;
+	struct enemyNode *prevEnemyptr;
+};
+
+typedef struct enemyNode EnemyNode;
+
+void moveEnemies(EnemyNode *enemyListptr, char *map);
+void findEnemiesDirection(EnemyNode *enemyListptr, Player player);
 void enemyIsHit(Enemy *enemy);
+EnemyNode *newEnemyList(void);
+void addEnemyElement(EnemyNode *enemyNodeptr, Enemy enemy);
+EnemyNode *removeEnemyElement(EnemyNode *enemyNodeptr);
 
 #endif

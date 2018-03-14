@@ -33,27 +33,29 @@ void displayPlayer(Player player) {
   drawRect(player.x, player.y, player.size, player.size);
 }
 
-void displayEnemies(Enemy enemies[], int nbEnemy) {
-  int i = 0;
+void displayEnemies(EnemyNode *enemyListptr) {
+  EnemyNode *element = enemyListptr->nextEnemyptr;
 
-  while(i < nbEnemy) {
-    if(enemies[i].isTrapped) {
+  while(element != enemyListptr) {
+    Enemy enemy = element->data;
+    if(enemy.isTrapped) {
       glColor3f(0.6, 0.0, 0.6);
     } else {
       glColor3f(1.0, 0.0, 0.2);
     }
-    drawRect(enemies[i].x, enemies[i].y, enemies[i].size, enemies[i].size);
-    i++;
+    drawRect(enemy.x, enemy.y, enemy.size, enemy.size);
+    element = element->nextEnemyptr;
   }
 }
 
-void displayBubbles(Bubble bubbles[], int nbBubble) {
-  int i = 0;
+void displayBubbles(BubbleNode *bubbleListptr) {
+  BubbleNode *element = bubbleListptr->nextBubbleptr;
 
   glColor3f(0.2, 0.0, 1.0);
-  while(i < nbBubble) {
-    drawRect(bubbles[i].x, bubbles[i].y, bubbles[i].size, bubbles[i].size);
-    i++;
+  while(element != bubbleListptr) {
+    Bubble bubble = element->data;
+    drawRect(bubble.x, bubble.y, bubble.size, bubble.size);
+    element = element->nextBubbleptr;
   }
 }
 

@@ -8,10 +8,8 @@
 
 typedef struct {
   Player player;
-  Enemy enemies[10];
-  int nbEnemy;
-  Bubble bubbles[50];
-  int nbBubble;
+  EnemyNode *enemyListptr;
+  BubbleNode *bubbleListptr;
   int score;
   int lives;
   int level;
@@ -22,7 +20,7 @@ char *loadMap();
 Game *loadGame();
 bool playerCollidesWithEnemy(Player player, Enemy enemy);
 bool bubbleCollidesWithEnemy(Bubble bubbles, Enemy enemy);
-void addBubble(Game *game);
+void addBubble(Game *gameptr);
 
 
 #endif

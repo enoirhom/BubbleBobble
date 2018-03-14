@@ -22,13 +22,6 @@ Game *gameptr;
 bool leftKeyPressed = false, rightKeyPressed = false, gamePaused = false;
 
 int main(int argc, char **argv) {
-  printf("%lu\n", sizeof(bool));
-  printf("%lu\n", sizeof(char));
-  printf("%lu\n", sizeof(Player));
-  printf("%lu\n", sizeof(Enemy));
-  printf("%lu\n", sizeof(Bubble));
-  printf("%lu\n", sizeof(Game));
-
   gameptr = loadGame();
 
   // init GLUT and create Window
@@ -59,8 +52,8 @@ void display(void) {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   displayWalls(gameptr->map);
-  displayEnemies(gameptr->enemies, gameptr->nbEnemy);
-  displayBubbles(gameptr->bubbles, gameptr->nbBubble);
+  displayEnemies(gameptr->enemyListptr);
+  displayBubbles(gameptr->bubbleListptr);
   displayPlayer(gameptr->player);
 
   glFlush();
@@ -73,9 +66,10 @@ void computePhysics(int timer) {
     glutTimerFunc(16, computePhysics, 0);
 
     movePlayer(&gameptr->player, gameptr->map);
-    moveBubbles(gameptr->bubbles, &gameptr->nbBubble);
-    moveEnemies(gameptr->enemies, gameptr->nbEnemy, gameptr->map);
+    moveBubbles(gameptr->bubbleListptr);
+    moveEnemies(gameptr->enemyListptr, gameptr->map);
 
+    /*
     for(int i = 0; i < gameptr->nbEnemy; i++) {
       if(playerCollidesWithEnemy(gameptr->player, gameptr->enemies[i])) {
         if(gameptr->enemies[i].isTrapped) {
@@ -87,7 +81,6 @@ void computePhysics(int timer) {
       }
     }
 
-    // PROBLEME LIE AU NOMBRE DE BULLE QUI CHANGE!!!
     for(int i = 0; i < gameptr->nbBubble; i++) {
       for(int j = 0; j < gameptr->nbEnemy; j++) {
         if(bubbleCollidesWithEnemy(gameptr->bubbles[i], gameptr->enemies[j])) {
@@ -96,11 +89,12 @@ void computePhysics(int timer) {
         }
       }
     }
+    */
 
     glutPostRedisplay();
   } else if(timer == 1) {
     glutTimerFunc(400, computePhysics, 1);
-    findEnemiesDirection(gameptr->enemies, gameptr->nbEnemy, gameptr->player);
+    findEnemiesDirection(gameptr->enemyListptr, gameptr->player);
   }
 
 }
