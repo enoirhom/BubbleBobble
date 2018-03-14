@@ -16,5 +16,6 @@ typedef struct {
 
 void moveEnemies(Enemy enemies[], int nbEnemy, char *map);
 void findEnemiesDirection(Enemy enemies[], int nbEnemy, Player player);
+void enemyIsHit(Enemy *enemy);
 
 #endif

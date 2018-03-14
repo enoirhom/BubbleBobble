@@ -20,7 +20,9 @@ typedef struct {
 
 char *loadMap();
 Game *loadGame();
-bool collidesWithEnemy(Player player, Enemy enemy);
+bool playerCollidesWithEnemy(Player player, Enemy enemy);
+bool bubbleCollidesWithEnemy(Bubble bubbles, Enemy enemy);
+void addBubble(Game *game);
 
 
 #endif

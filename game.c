@@ -64,6 +64,29 @@ char *loadMap(int level) {
 }
 
 // Check if the player collides with the enemy
-bool collidesWithEnemy(Player player, Enemy enemy) {
+bool playerCollidesWithEnemy(Player player, Enemy enemy) {
   return !(player.x > (enemy.x + enemy.size) || (player.x + player.size) < enemy.x || player.y > (enemy.y + enemy.size) || (player.y + player.size) < enemy.y);
 }
+
+bool bubbleCollidesWithEnemy(Bubble bubble, Enemy enemy) {
+  return !(bubble.x > (enemy.x + enemy.size) || (bubble.x + bubble.size) < enemy.x || bubble.y > (enemy.y + enemy.size) || (bubble.y + bubble.size) < enemy.y);
+}
+
+void addBubble(Game *game) {
+  if(game->nbBubble < 50) {
+    game->bubbles[game->nbBubble] = creatBubble(game->player.x, game->player.y, game->player.isFacingRight);
+    game->nbBubble++;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

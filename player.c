@@ -17,24 +17,24 @@ float calculateYMin(Player player, char *map) {
 }
 
 // Calculate the new position of the player
-void movePlayer(Player *player, char *map) {
-  player->yMin = calculateYMin(*player, map);
+void movePlayer(Player *playerptr, char *map) {
+  playerptr->yMin = calculateYMin(*playerptr, map);
 
-  player->x += player->xSpeed;
-  player->ySpeed -= 0.5;
-  player->y += player->ySpeed;
+  playerptr->x += playerptr->xSpeed;
+  playerptr->ySpeed -= 0.5;
+  playerptr->y += playerptr->ySpeed;
 
-  if(player->y <= player->yMin) {
-    player->y = player->yMin;
-    player->ySpeed = 0.0;
+  if(playerptr->y <= playerptr->yMin) {
+    playerptr->y = playerptr->yMin;
+    playerptr->ySpeed = 0.0;
   }
 
-  if(player->x < 20.0) {
-    player->x = 20.0;
+  if(playerptr->x < 20.0) {
+    playerptr->x = 20.0;
   }
 
-  if(player->x > 460.0) {
-    player->x = 460.0;
+  if(playerptr->x > 460.0) {
+    playerptr->x = 460.0;
   }
 }
 

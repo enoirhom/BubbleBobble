@@ -18,11 +18,18 @@ void keyPressed(unsigned char key, int x, int y);
 void specialKeyPressed(int key, int x, int y);
 void specialKeyReleased(int key, int x, int y);
 
-Game *gamePtr;
+Game *gameptr;
 bool leftKeyPressed = false, rightKeyPressed = false, gamePaused = false;
 
 int main(int argc, char **argv) {
-  gamePtr = loadGame();
+  printf("%lu\n", sizeof(bool));
+  printf("%lu\n", sizeof(char));
+  printf("%lu\n", sizeof(Player));
+  printf("%lu\n", sizeof(Enemy));
+  printf("%lu\n", sizeof(Bubble));
+  printf("%lu\n", sizeof(Game));
+
+  gameptr = loadGame();
 
   // init GLUT and create Window
   glutInit(&argc, argv);
@@ -51,9 +58,10 @@ void display(void) {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-  displayWalls(gamePtr->map);
-  displayEnemies(gamePtr->enemies, gamePtr->nbEnemy);
-  displayPlayer(gamePtr->player);
+  displayWalls(gameptr->map);
+  displayEnemies(gameptr->enemies, gameptr->nbEnemy);
+  displayBubbles(gameptr->bubbles, gameptr->nbBubble);
+  displayPlayer(gameptr->player);
 
   glFlush();
 }
@@ -64,19 +72,35 @@ void computePhysics(int timer) {
     //Recall computePhysics in 16ms
     glutTimerFunc(16, computePhysics, 0);
 
-    movePlayer(&gamePtr->player, gamePtr->map);
-    moveEnemies(gamePtr->enemies, gamePtr->nbEnemy, gamePtr->map);
+    movePlayer(&gameptr->player, gameptr->map);
+    moveBubbles(gameptr->bubbles, &gameptr->nbBubble);
+    moveEnemies(gameptr->enemies, gameptr->nbEnemy, gameptr->map);
 
-    for(int i = 0; i < gamePtr->nbEnemy; i++) {
-      if(collidesWithEnemy(gamePtr->player, gamePtr->enemies[i])) {
-        gamePtr->enemies[i].isTrapped = true;
+    for(int i = 0; i < gameptr->nbEnemy; i++) {
+      if(playerCollidesWithEnemy(gameptr->player, gameptr->enemies[i])) {
+        if(gameptr->enemies[i].isTrapped) {
+          printf("GAGNE!\n");
+        } else {
+          gameptr->lives -= 1;
+          printf("%i\n", gameptr->lives);
+        }
+      }
+    }
+
+    // PROBLEME LIE AU NOMBRE DE BULLE QUI CHANGE!!!
+    for(int i = 0; i < gameptr->nbBubble; i++) {
+      for(int j = 0; j < gameptr->nbEnemy; j++) {
+        if(bubbleCollidesWithEnemy(gameptr->bubbles[i], gameptr->enemies[j])) {
+          enemyIsHit(&(gameptr->enemies[j]));
+          removeBubble(gameptr->bubbles, &(gameptr->nbBubble), i);
+        }
       }
     }
 
     glutPostRedisplay();
   } else if(timer == 1) {
     glutTimerFunc(400, computePhysics, 1);
-    findEnemiesDirection(gamePtr->enemies, gamePtr->nbEnemy, gamePtr->player);
+    findEnemiesDirection(gameptr->enemies, gameptr->nbEnemy, gameptr->player);
   }
 
 }
@@ -86,7 +110,7 @@ void changeSize(int w, int h) {
 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
-  glOrtho(0, w, 0, h, 0, 100);
+  glOrtho(0, 500, 0, 400, 0, 100);
 
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
@@ -96,25 +120,31 @@ void keyPressed(unsigned char key, int x, int y) {
   switch(key) {
     case 27:
       exit(0);
+    case 32:
+      addBubble(gameptr);
+      break;
     default:
-      printf("%c\n", key);
+      printf("%i\n", key);
+      break;
   }
 }
 
 void specialKeyPressed(int key, int x, int y) {
   switch (key) {
     case GLUT_KEY_UP :
-      if(gamePtr->player.y == gamePtr->player.yMin) {
-        gamePtr->player.ySpeed = 10.0;
+      if(gameptr->player.y == gameptr->player.yMin) {
+        gameptr->player.ySpeed = 10.0;
       }
       break;
     case GLUT_KEY_LEFT:
       leftKeyPressed = true;
-      gamePtr->player.xSpeed = -5.0;
+      gameptr->player.xSpeed = -3.0;
+      gameptr->player.isFacingRight = false;
       break;
     case GLUT_KEY_RIGHT:
       rightKeyPressed = true;
-      gamePtr->player.xSpeed = 5.0;
+      gameptr->player.xSpeed = 3.0;
+      gameptr->player.isFacingRight = true;
       break;
   }
 }
@@ -124,17 +154,21 @@ void specialKeyReleased(int key, int x, int y) {
   switch (key) {
     case GLUT_KEY_LEFT:
       if(rightKeyPressed) {
-        gamePtr->player.xSpeed = 5.0;
+        gameptr->player.xSpeed = 3.0;
+        gameptr->player.isFacingRight = true;
       } else {
-        gamePtr->player.xSpeed = 0.0;
+        gameptr->player.xSpeed = 0.0;
+        gameptr->player.isFacingRight = false;
       }
       leftKeyPressed = false;
       break;
     case GLUT_KEY_RIGHT:
       if(leftKeyPressed) {
-        gamePtr->player.xSpeed = -5.0;
+        gameptr->player.xSpeed = -3.0;
+        gameptr->player.isFacingRight = false;
       } else {
-        gamePtr->player.xSpeed = 0.0;
+        gameptr->player.xSpeed = 0.0;
+        gameptr->player.isFacingRight = true;
       }
       rightKeyPressed = false;
       break;

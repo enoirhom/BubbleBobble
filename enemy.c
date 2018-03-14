@@ -14,6 +14,12 @@ float enemyCalculateYMin(Enemy enemy, char *map) {
   return 20.0;
 }
 
+void enemyIsHit(Enemy *enemyptr) {
+  enemyptr->xSpeed = 0.0;
+  enemyptr->ySpeed = 0.2;
+  enemyptr->isTrapped = true;
+}
+
 void moveEnemies(Enemy enemies[], int nbEnemy, char *map) {
   int i = 0;
 
@@ -31,6 +37,9 @@ void moveEnemies(Enemy enemies[], int nbEnemy, char *map) {
         enemies[i].y = enemies[i].yMin;
         enemies[i].ySpeed = 0.0;
       }
+    } else {
+      enemies[i].x += enemies[i].xSpeed;
+      enemies[i].y += enemies[i].ySpeed;
     }
     i++;
   }
@@ -40,17 +49,19 @@ void findEnemiesDirection(Enemy enemies[], int nbEnemy, Player player) {
   int i = 0;
 
   while(i < nbEnemy) {
-    if(enemies[i].x < player.x) {
-      enemies[i].xSpeed = 3.0;
-    } else {
-      enemies[i].xSpeed = -3.0;
-    }
+    if(!enemies[i].isTrapped){
+      if(enemies[i].x < player.x) {
+        enemies[i].xSpeed = 1.0;
+      } else {
+        enemies[i].xSpeed = -1.0;
+      }
 
-    if(enemies[i].y < player.y && enemies[i].y == enemies[i].yMin) {
-      enemies[i].ySpeed = 10;
-    }
+      if(enemies[i].y < player.y && enemies[i].y == enemies[i].yMin) {
+        enemies[i].ySpeed = 10;
+      }
 
-    enemies[i].isTrapped = false;
+      //enemies[i].isTrapped = false;
+    }
 
     i++;
   }
