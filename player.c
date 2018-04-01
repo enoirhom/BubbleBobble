@@ -2,23 +2,42 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define NUMBEROFROW 25
 
-float calculateYMin(Player player, char *map) {
+// Find the lowest possible y position under the player (platform or bubble)
+float calculateYMin(Player player, BubbleNode *bubbleListptr, char *map) {
+  float playerMiddle = player.x + (player.size / 2);
   int row = player.y / 20;
-  int col = (player.x + (player.size / 2)) / 20;
-  int pos = row * 25 + col;
+  int col = playerMiddle / 20;
+  int pos = row * NUMBEROFROW + col;
+  int i = pos - NUMBEROFROW;
+  float yMin;
 
-  for(int i = pos-25; i > 0; i -= 25) {
-    if(map[i] == '1') {
-      return ((i / 25) * 20.0) + 20.0;
-    }
+  while(i > 0 && map[i] != '1') {
+    i -= NUMBEROFROW;
   }
-  return 20.0;
+
+  yMin = ((i / NUMBEROFROW) * 20.0) + 20.0;
+
+  BubbleNode *element = bubbleListptr->nextBubbleptr;
+
+  while(element != bubbleListptr) {
+    if(playerMiddle > element->data.x && playerMiddle < (element->data.x + element->data.size)) {
+      if(player.y > (element->data.y)) {
+        if((element->data.y + element->data.size) > yMin) {
+          yMin = element->data.y + element->data.size;
+        }
+      }
+    }
+    element = element->nextBubbleptr;
+  }
+
+  return yMin;
 }
 
 // Calculate the new position of the player
-void movePlayer(Player *playerptr, char *map) {
-  playerptr->yMin = calculateYMin(*playerptr, map);
+void movePlayer(Player *playerptr, BubbleNode *bubbleListptr, char *map) {
+  playerptr->yMin = calculateYMin(*playerptr, bubbleListptr, map);
 
   playerptr->x += playerptr->xSpeed;
   playerptr->ySpeed -= 0.5;
@@ -35,6 +54,10 @@ void movePlayer(Player *playerptr, char *map) {
 
   if(playerptr->x > 460.0) {
     playerptr->x = 460.0;
+  }
+
+  if(playerptr->timeSinceHit > 0) {
+    playerptr->timeSinceHit -= 1;
   }
 }
 

@@ -1,16 +1,21 @@
 #include <stdlib.h>
+#include <time.h>
 #include "bubble.h"
 
 
+// Creae a bubble at the player position
 Bubble createBubble(float x, float y, bool isGoingRight) {
 	Bubble bubble;
+	int randomDuration;
 
 	bubble.x = x;
 	bubble.y = y;
 	bubble.ySpeed = 0.0;
 	bubble.size = 20.0;
-	bubble.duration = 625;
+	randomDuration = rand() % 75;
+	bubble.duration = 550 + randomDuration;
 
+	// Give the bubble a speed depending where the player is looking at
 	if(isGoingRight) {
 		bubble.xSpeed = 8.0;
 	} else {
@@ -20,6 +25,7 @@ Bubble createBubble(float x, float y, bool isGoingRight) {
 	return bubble;
 }
 
+// Calculate the new position of every bubble
 void moveBubbles(BubbleNode *bubbleListptr) {
 	BubbleNode *element = bubbleListptr->nextBubbleptr;
 
@@ -37,6 +43,7 @@ void moveBubbles(BubbleNode *bubbleListptr) {
 
 		if(bubble->xSpeed > -0.5 && bubble->xSpeed < 0.5) {
 			bubble->xSpeed = 0.0;
+			bubble->ySpeed = 0.2;
 		}
 
 		if(bubble->x < 20.0) {
@@ -54,6 +61,8 @@ void moveBubbles(BubbleNode *bubbleListptr) {
 		}
 	}
 }
+
+/********BUBBLE CHAINED LIST********/
 
 BubbleNode *newBubbleList(void) {
 	BubbleNode *bubbleNodeptr;
@@ -93,7 +102,13 @@ BubbleNode *removeBubbleElement(BubbleNode *bubbleNodeptr) {
 	return nextElemptr;
 }
 
+void clearBubbleList(BubbleNode *bubbleNodeptr) {
+	BubbleNode *element = bubbleNodeptr->nextBubbleptr;
 
+	while(element != bubbleNodeptr) {
+		element = removeBubbleElement(element);
+	}
+}
 
 
 

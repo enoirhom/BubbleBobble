@@ -8,8 +8,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include "game.h"
 #include "display.h"
+#include "keyboard.h"
+#include "menu.h"
+
 
 void display(void);
 void computePhysics(int timer);
@@ -18,20 +22,31 @@ void keyPressed(unsigned char key, int x, int y);
 void specialKeyPressed(int key, int x, int y);
 void specialKeyReleased(int key, int x, int y);
 
+char mainMenuText[5][20] = {"Continuer", "Nouvelle partie", "Charger partie", "Meilleurs scores", "Quitter"};
+char pauseMenuText[5][20] = {"Reprendre", "Sauvegarder", "Meilleurs scores", "Menu principal", "Quitter"};
+int menuChoice;
+
+enum state state;
 Game *gameptr;
-bool leftKeyPressed = false, rightKeyPressed = false, gamePaused = false;
+struct keyboard keyboard;
 
 int main(int argc, char **argv) {
-  gameptr = loadGame();
+  srand(time(NULL));
 
-  // init GLUT and create Window
+  menuChoice = 1;
+  state = menu;
+  gameptr = NULL;
+  keyboard = (struct keyboard){.leftKeyPressed = false, .rightKeyPressed = false};
+
+  // Init GLUT and create Window
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(500, 400);
   glutCreateWindow("Bubble Bobble");
+  glutSetCursor(GLUT_CURSOR_NONE);
 
-  // register callbacks
+  // Register callbacks
   glutDisplayFunc(display);
   glutReshapeFunc(changeSize);
   glutTimerFunc(0, computePhysics, 0);
@@ -40,7 +55,7 @@ int main(int argc, char **argv) {
   glutSpecialFunc(specialKeyPressed);
   glutSpecialUpFunc(specialKeyReleased);
 
-  // enter GLUT event processing cycle
+  // Enter GLUT event processing cycle
   glutMainLoop();
 
   return 0;
@@ -51,52 +66,44 @@ void display(void) {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-  displayWalls(gameptr->map);
-  displayEnemies(gameptr->enemyListptr);
-  displayBubbles(gameptr->bubbleListptr);
-  displayPlayer(gameptr->player);
+  switch(state) {
+    case game:
+      displayGame(gameptr);  
+      break;    
+    case menu:
+      displayMenu(mainMenuText, menuChoice);
+      break;
+    case pauseMenu:
+      displayGame(gameptr);
+      displayMenu(pauseMenuText, menuChoice);
+      break;
+
+  }
 
   glFlush();
 }
 
 // Calculate the new position of the elements every 16ms. Ask for a redraw at the end
 void computePhysics(int timer) {
-  if(timer == 0) {
-    //Recall computePhysics in 16ms
-    glutTimerFunc(16, computePhysics, 0);
-
-    movePlayer(&gameptr->player, gameptr->map);
-    moveBubbles(gameptr->bubbleListptr);
-    moveEnemies(gameptr->enemyListptr, gameptr->map);
-
-    /*
-    for(int i = 0; i < gameptr->nbEnemy; i++) {
-      if(playerCollidesWithEnemy(gameptr->player, gameptr->enemies[i])) {
-        if(gameptr->enemies[i].isTrapped) {
-          printf("GAGNE!\n");
-        } else {
-          gameptr->lives -= 1;
-          printf("%i\n", gameptr->lives);
-        }
-      }
-    }
-
-    for(int i = 0; i < gameptr->nbBubble; i++) {
-      for(int j = 0; j < gameptr->nbEnemy; j++) {
-        if(bubbleCollidesWithEnemy(gameptr->bubbles[i], gameptr->enemies[j])) {
-          enemyIsHit(&(gameptr->enemies[j]));
-          removeBubble(gameptr->bubbles, &(gameptr->nbBubble), i);
-        }
-      }
-    }
-    */
-
-    glutPostRedisplay();
-  } else if(timer == 1) {
-    glutTimerFunc(400, computePhysics, 1);
-    findEnemiesDirection(gameptr->enemyListptr, gameptr->player);
+  switch(state) {
+    case game:
+      if(timer == 0) {
+        //Recall computePhysics in 16ms
+        glutTimerFunc(16, computePhysics, 0);
+        moveGame(gameptr);
+        glutPostRedisplay();
+      } else if(timer == 1) {
+        glutTimerFunc(400, computePhysics, 1);
+        findEnemiesDirection(gameptr->enemyListptr, gameptr->player);
+      }      
+      break;
+    case menu:
+      glutPostRedisplay();
+      break;
+    case pauseMenu:
+      glutPostRedisplay();
+      break;
   }
-
 }
 
 void changeSize(int w, int h) {
@@ -111,60 +118,41 @@ void changeSize(int w, int h) {
 }
 
 void keyPressed(unsigned char key, int x, int y) {
-  switch(key) {
-    case 27:
-      exit(0);
-    case 32:
-      addBubble(gameptr);
+  switch(state) {
+    case game:
+      gameKeyPressed(key, gameptr, &state, &menuChoice);
       break;
-    default:
-      printf("%i\n", key);
+    case pauseMenu:
+      pauseMenuKeyPressed(key, &state, &menuChoice, &gameptr);
+      break;
+    case menu:
+      menuKeyPressed(key, &state, menuChoice, &gameptr);
       break;
   }
 }
 
 void specialKeyPressed(int key, int x, int y) {
-  switch (key) {
-    case GLUT_KEY_UP :
-      if(gameptr->player.y == gameptr->player.yMin) {
-        gameptr->player.ySpeed = 10.0;
-      }
+  switch(state) {
+    case game:
+      specialGameKeyPressed(key, gameptr, &state, &keyboard);
       break;
-    case GLUT_KEY_LEFT:
-      leftKeyPressed = true;
-      gameptr->player.xSpeed = -3.0;
-      gameptr->player.isFacingRight = false;
+    case pauseMenu:
+      specialMenuKeyPressed(key, &menuChoice);
       break;
-    case GLUT_KEY_RIGHT:
-      rightKeyPressed = true;
-      gameptr->player.xSpeed = 3.0;
-      gameptr->player.isFacingRight = true;
+    case menu:
+      specialMenuKeyPressed(key, &menuChoice);
       break;
   }
 }
 
-
 void specialKeyReleased(int key, int x, int y) {
-  switch (key) {
-    case GLUT_KEY_LEFT:
-      if(rightKeyPressed) {
-        gameptr->player.xSpeed = 3.0;
-        gameptr->player.isFacingRight = true;
-      } else {
-        gameptr->player.xSpeed = 0.0;
-        gameptr->player.isFacingRight = false;
-      }
-      leftKeyPressed = false;
+  switch(state) {
+    case game:
+      specialGameKeyReleased(key, gameptr, &state, &keyboard);
       break;
-    case GLUT_KEY_RIGHT:
-      if(leftKeyPressed) {
-        gameptr->player.xSpeed = -3.0;
-        gameptr->player.isFacingRight = false;
-      } else {
-        gameptr->player.xSpeed = 0.0;
-        gameptr->player.isFacingRight = true;
-      }
-      rightKeyPressed = false;
+    case pauseMenu:
+      break;
+    case menu:
       break;
   }
 }

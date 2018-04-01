@@ -4,9 +4,8 @@
 #include "game.h"
 
 
-void displayPlayer(Player player);
-void displayEnemies(EnemyNode *enemyListptr);
-void displayBubbles(BubbleNode *bubbleListptr);
-void displayWalls(char *map);
+void displayGame(Game *gameptr);
+void displayText(float x, float y, const char *string, void *font);
+void displayMenu(char mainMenuText[5][20], int playerChoice);
 
 #endif

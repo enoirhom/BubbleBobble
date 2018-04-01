@@ -2,6 +2,7 @@
 #define _PLAYER_
 
 #include <stdbool.h>
+#include "bubble.h"
 
 typedef struct {
   float x;
@@ -11,8 +12,9 @@ typedef struct {
   float yMin;
   float size;
   bool isFacingRight;
+  int timeSinceHit;
 } Player;
 
-void movePlayer(Player *player, char *map);
+void movePlayer(Player *player, BubbleNode *bubbleListptr, char *map);
 
 #endif

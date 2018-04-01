@@ -12,6 +12,7 @@ typedef struct {
   float yMin;
   float size;
   bool isTrapped;
+  int timeSinceTrapped;
 } Enemy;
 
 struct enemyNode {

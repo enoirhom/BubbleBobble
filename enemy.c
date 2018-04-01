@@ -3,6 +3,7 @@
 #include "enemy.h"
 
 
+// Find the lowest possible y position under the enemy
 float enemyCalculateYMin(Enemy enemy, char *map) {
   int row = enemy.y / 20;
   int col = (enemy.x + (enemy.size / 2)) / 20;
@@ -16,15 +17,19 @@ float enemyCalculateYMin(Enemy enemy, char *map) {
   return 20.0;
 }
 
+// Change the enemy behavior when hit by a bubble
 void enemyIsHit(Enemy *enemyptr) {
   enemyptr->xSpeed = 0.0;
   enemyptr->ySpeed = 0.2;
   enemyptr->isTrapped = true;
+  enemyptr->timeSinceTrapped = 300;
 }
 
+// Calculate the new position of each enemy
 void moveEnemies(EnemyNode *enemyListptr, char *map) {
   EnemyNode *element = enemyListptr->nextEnemyptr;
 
+  // Run throught the enemy list
   while(element != enemyListptr) {
     Enemy *enemy = &element->data;
     if(!enemy->isTrapped) {
@@ -43,11 +48,17 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
     } else {
       enemy->x += enemy->xSpeed;
       enemy->y += enemy->ySpeed;
+      enemy->timeSinceTrapped -= 1;
+
+      if(enemy->timeSinceTrapped <= 0) {
+        enemy->isTrapped = false;
+      }
     }
     element = element->nextEnemyptr;
   }
 }
 
+// Calculate a direction depending on the position of the player
 void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
   EnemyNode *element = enemyListptr->nextEnemyptr;
 
@@ -69,6 +80,8 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
   }
 }
 
+/********ENEMY CHAINED LIST********/
+
 EnemyNode *newEnemyList(void) {
   EnemyNode *enemyNodeptr;
   enemyNodeptr = malloc(sizeof(EnemyNode));
@@ -76,7 +89,7 @@ EnemyNode *newEnemyList(void) {
   if(enemyNodeptr == NULL) {
     return NULL;
   } else {
-    enemyNodeptr->data = (Enemy){.x = 0.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .size = 0.0, .isTrapped = true};
+    enemyNodeptr->data = (Enemy){.x = 0.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .size = 0.0, .isTrapped = true, .timeSinceTrapped = 0};
     enemyNodeptr->nextEnemyptr = enemyNodeptr;
     enemyNodeptr->prevEnemyptr = enemyNodeptr;
   }

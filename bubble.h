@@ -27,5 +27,6 @@ void moveBubbles(BubbleNode *bubbleListptr);
 BubbleNode *newBubbleList(void);
 void addBubbleElement(BubbleNode *bubbleNodeptr, Bubble bubble);
 BubbleNode *removeBubbleElement(BubbleNode *bubbleNodeptr);
+void clearBubbleList(BubbleNode *bubbleNodeptr);
 
 #endif
