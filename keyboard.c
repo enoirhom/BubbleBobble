@@ -10,6 +10,9 @@
 #include "keyboard.h"
 #include "game.h"
 
+#define XSPEED 3.0
+#define JUMPSPEED 10.0
+
 
 void computePhysics(int timer);
 
@@ -33,7 +36,7 @@ void gameKeyPressed(unsigned char key, Game *gameptr, enum state *state, int *ch
 		case 122:
 			// The player can only jump if he already is on a platform or a bubble
 			if(gameptr->player.y == gameptr->player.yMin) {
-				gameptr->player.ySpeed = 10.0;
+				gameptr->player.ySpeed = JUMPSPEED;
 			}
 			break;
 	}
@@ -45,19 +48,19 @@ void specialGameKeyPressed(int key, Game *gameptr, enum state *state, struct key
 		// Pressing the UP Arrow key allows the player to jump
 		case GLUT_KEY_UP:
 			if(gameptr->player.y == gameptr->player.yMin) {
-				gameptr->player.ySpeed = 10.0;
+				gameptr->player.ySpeed = JUMPSPEED;
 			}
 			break;
 		// Pressing the LEFT Arrow key moves the player left (until the key is released)
 		case GLUT_KEY_LEFT:
 			keyboard->leftKeyPressed = true;
-			gameptr->player.xSpeed = -3.0;
+			gameptr->player.xSpeed = -XSPEED;
 			gameptr->player.isFacingRight = false;
 			break;
 		// Pressing the RIGHT Arrow key moves the player right (until the key is released)
 		case GLUT_KEY_RIGHT:
 			keyboard->rightKeyPressed = true;
-			gameptr->player.xSpeed = 3.0;
+			gameptr->player.xSpeed = XSPEED;
 			gameptr->player.isFacingRight = true;
 			break;
     }
@@ -70,7 +73,7 @@ void specialGameKeyReleased(int key, Game *gameptr, enum state *state, struct ke
 		case GLUT_KEY_LEFT:
 			// If the RIGHT Arrow key is still pressed, the player moves to the right
 			if(keyboard->rightKeyPressed) {
-				gameptr->player.xSpeed = 3.0;
+				gameptr->player.xSpeed = XSPEED;
 				gameptr->player.isFacingRight = true;
 			} else {
 				gameptr->player.xSpeed = 0.0;
@@ -82,7 +85,7 @@ void specialGameKeyReleased(int key, Game *gameptr, enum state *state, struct ke
 		case GLUT_KEY_RIGHT:
 			// If the LEFT Arrow key is still pressed, the player moves to the left
 			if(keyboard->leftKeyPressed) {
-				gameptr->player.xSpeed = -3.0;
+				gameptr->player.xSpeed = -XSPEED;
 				gameptr->player.isFacingRight = false;
 			} else {
 				gameptr->player.xSpeed = 0.0;

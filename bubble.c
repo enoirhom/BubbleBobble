@@ -2,6 +2,7 @@
 #include <time.h>
 #include "bubble.h"
 
+#define BUBBLESLOWDOWN 0.4
 
 // Creae a bubble at the player position
 Bubble createBubble(float x, float y, bool isGoingRight) {
@@ -36,9 +37,9 @@ void moveBubbles(BubbleNode *bubbleListptr) {
 		bubble->duration -= 1;
 
 		if(bubble->xSpeed > 0) {
-			bubble->xSpeed -= 0.4;
+			bubble->xSpeed -= BUBBLESLOWDOWN;
 		} else if(bubble->xSpeed < 0) {
-			bubble->xSpeed += 0.4;
+			bubble->xSpeed += BUBBLESLOWDOWN;
 		}
 
 		if(bubble->xSpeed > -0.5 && bubble->xSpeed < 0.5) {

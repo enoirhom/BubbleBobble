@@ -1,17 +1,22 @@
-
 #include <stdlib.h>
 #include "enemy.h"
+
+#define NBMAPCOL 25
+#define TILESIZE 20
+#define ENEMYXSPEED 1.0
+#define JUMPSPEED 10.0
+#define GRAVITY 0.5
 
 
 // Find the lowest possible y position under the enemy
 float enemyCalculateYMin(Enemy enemy, char *map) {
-  int row = enemy.y / 20;
-  int col = (enemy.x + (enemy.size / 2)) / 20;
-  int pos = row * 25 + col;
+  int row = enemy.y / TILESIZE;
+  int col = (enemy.x + (enemy.size / 2)) / TILESIZE;
+  int pos = row * NBMAPCOL + col;
 
-  for(int i = pos-25; i > 0; i -= 25) {
+  for(int i = pos - NBMAPCOL; i > 0; i -= NBMAPCOL) {
     if(map[i] == '1') {
-      return ((i / 25) * 20.0) + 20.0;
+      return (float)((i / NBMAPCOL) * TILESIZE) + TILESIZE;
     }
   }
   return 20.0;
@@ -37,7 +42,7 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
 
       // Move the enemy depending on its speeds
       enemy->x += enemy->xSpeed;
-      enemy->ySpeed -= 0.5;
+      enemy->ySpeed -= GRAVITY;
       enemy->y += enemy->ySpeed;
  
       // Stop the enemy from going under platforms
@@ -66,13 +71,13 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
     Enemy *enemy = &element->data;
     if(!enemy->isTrapped){
       if(enemy->x < player.x) {
-        enemy->xSpeed = 1.0;
+        enemy->xSpeed = ENEMYXSPEED;
       } else {
-        enemy->xSpeed = -1.0;
+        enemy->xSpeed = -ENEMYXSPEED;
       }
 
       if(enemy->y < player.y && enemy->y == enemy->yMin) {
-        enemy->ySpeed = 10;
+        enemy->ySpeed = JUMPSPEED;
       }
     }
 

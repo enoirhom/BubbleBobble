@@ -2,22 +2,24 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define NUMBEROFROW 25
+#define NBMAPCOL 25
+#define TILESIZE 20
+#define GRAVITY 0.5
 
 // Find the lowest possible y position under the player (platform or bubble)
 float calculateYMin(Player player, BubbleNode *bubbleListptr, char *map) {
   float playerMiddle = player.x + (player.size / 2);
-  int row = player.y / 20;
-  int col = playerMiddle / 20;
-  int pos = row * NUMBEROFROW + col;
-  int i = pos - NUMBEROFROW;
+  int row = player.y / TILESIZE;
+  int col = playerMiddle / TILESIZE;
+  int pos = row * NBMAPCOL + col;
+  int i = pos - NBMAPCOL;
   float yMin;
 
   while(i > 0 && map[i] != '1') {
-    i -= NUMBEROFROW;
+    i -= NBMAPCOL;
   }
 
-  yMin = ((i / NUMBEROFROW) * 20.0) + 20.0;
+  yMin = (float)((i / NBMAPCOL) * TILESIZE) + TILESIZE;
 
   BubbleNode *element = bubbleListptr->nextBubbleptr;
 
@@ -40,7 +42,7 @@ void movePlayer(Player *playerptr, BubbleNode *bubbleListptr, char *map) {
   playerptr->yMin = calculateYMin(*playerptr, bubbleListptr, map);
 
   playerptr->x += playerptr->xSpeed;
-  playerptr->ySpeed -= 0.5;
+  playerptr->ySpeed -= GRAVITY;
   playerptr->y += playerptr->ySpeed;
 
   if(playerptr->y <= playerptr->yMin) {

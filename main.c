@@ -22,7 +22,7 @@ void keyPressed(unsigned char key, int x, int y);
 void specialKeyPressed(int key, int x, int y);
 void specialKeyReleased(int key, int x, int y);
 
-char mainMenuText[5][20] = {"Continuer", "Nouvelle partie", "Charger partie", "Meilleurs scores", "Quitter"};
+char mainMenuText[5][20] = {"Continuer", "Nouvelle partie", "Charger la partie", "Meilleurs scores", "Quitter"};
 char pauseMenuText[5][20] = {"Reprendre", "Sauvegarder", "Meilleurs scores", "Menu principal", "Quitter"};
 int menuChoice;
 

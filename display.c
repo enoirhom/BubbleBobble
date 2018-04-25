@@ -10,6 +10,9 @@
 #include "display.h"
 
 #define MAXSCORELENGTH 9
+#define TILESIZE 20
+#define MAPLENGHT 500
+#define NBMAPCOL 25
 
 
 // Draw a rectangle from the bottom left corner
@@ -30,9 +33,9 @@ void drawRect(float x, float y, float width, float height) {
 // Draw a rectangle at every '1' in the map array
 void displayWalls(char *map) {
   glColor3f(0.9, 0.9, 0.9);
-  for(int i = 0; i < 500; i++) {
+  for(int i = 0; i < MAPLENGHT; i++) {
     if (map[i] == '1') {
-      drawRect((i % 25) * 20, i / 25 * 20, 20, 20);
+      drawRect((i % NBMAPCOL) * TILESIZE, i / NBMAPCOL * TILESIZE, TILESIZE, TILESIZE);
     }
   }
 }

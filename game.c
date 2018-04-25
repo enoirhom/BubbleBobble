@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define NBMAPCOL 25
+#define NBMAPROW 20
+
 
 void moveGame(Game *gameptr) {
   moveBubbles(gameptr->bubbleListptr);
@@ -55,12 +58,12 @@ void loadLevel(Game *gameptr) {
 
   if(file != NULL) {
     if(gameptr->map == NULL) {
-      gameptr->map = malloc(25 * 20 * sizeof(char));      
+      gameptr->map = malloc(NBMAPCOL * NBMAPROW * sizeof(char));      
     }
 
     // Search for the right level. Marked with @level
     fscanf(file, "%c", &c);
-    while(c != (level + 48)) {
+    while(c != (level + '0')) {
       while(c != '@') {
         fscanf(file, "%c", &c);
       }
@@ -144,13 +147,12 @@ void loadGame(Game **gameptr) {
 
   if(file != NULL) {
     fread(&save, sizeof(Save), 1, file);
+    newGame(gameptr, save.score, save.lives, save.level);
   } else {
     printf("File couldn't be opened\n");
   }
 
   fclose(file);
-
-  newGame(gameptr, save.score, save.lives, save.level);
 }
 
 
