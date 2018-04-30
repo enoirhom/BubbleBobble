@@ -52,9 +52,7 @@ void movePlayer(Player *playerptr, BubbleNode *bubbleListptr, char *map) {
 
   if(playerptr->x < 20.0) {
     playerptr->x = 20.0;
-  }
-
-  if(playerptr->x > 460.0) {
+  } else if(playerptr->x > 460.0) {
     playerptr->x = 460.0;
   }
 

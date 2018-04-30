@@ -43,7 +43,14 @@ void displayWalls(char *map) {
 // Draw a rectangle at the player's position
 void displayPlayer(Player player) {
   glColor3f(0.4, 1.0, 0.2);
-  drawRect(player.x, player.y, player.size, player.size);
+  
+  if(player.timeSinceHit == 0) {
+    drawRect(player.x, player.y, player.size, player.size);
+  } else {
+    if(player.timeSinceHit % 10 == 0) {
+      drawRect(player.x, player.y, player.size, player.size);
+    }
+  }
 }
 
 // Draw a recangle at the position of every enemy
@@ -94,10 +101,11 @@ void displayMenu(char mainMenuText[5][20], int playerChoice) {
   float x = 170.0, y = 300.0;
 
   glColor3f(0.0, 0.0, 0.0);
-  drawRect(160.0, 90.0, 180.0, 230.0);
+  drawRect(150.0, 90.0, 190.0, 230.0);
   for(int i = 0; i < 5; i++) {
     if(i == playerChoice) {
       glColor3f(1.0, 0.5, 0.1);
+      displayText(x - 12.0, y + 2.0, ">", GLUT_BITMAP_HELVETICA_18);
     } else {
       glColor3f(0.8, 0.8, 0.8);
     }

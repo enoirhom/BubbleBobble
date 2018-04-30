@@ -77,7 +77,7 @@ void loadLevel(Game *gameptr) {
     while(j < nbEnemy) {
       float x, y;
       fscanf(file, "%f %f", &x, &y);
-      addEnemyElement(gameptr->enemyListptr, (Enemy){.x = x, .y = y, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false, .timeSinceTrapped = 0});
+      addEnemyElement(gameptr->enemyListptr, (Enemy){.x = x, .y = y, .xSpeed = 1.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false, .timeSinceTrapped = 0});
       j++;
     }
 

@@ -50,6 +50,15 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
         enemy->y = enemy->yMin;
         enemy->ySpeed = 0.0;
       }
+
+      if(enemy->x < 20.0) {
+        enemy->xSpeed = -enemy->xSpeed;
+        enemy->x = 20.0;
+      } else if(enemy->x > 460.0) {
+        enemy->xSpeed = -enemy->xSpeed;
+        enemy->x = 460.0;
+      }
+
     } else {
       enemy->x += enemy->xSpeed;
       enemy->y += enemy->ySpeed;
@@ -66,22 +75,37 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
 // Calculate a direction depending on the position of the player
 void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
   EnemyNode *element = enemyListptr->nextEnemyptr;
+  int randomNumber, i = 0;
+  Enemy *enemy;
 
-  while(element != enemyListptr) {
-    Enemy *enemy = &element->data;
-    if(!enemy->isTrapped){
-      if(enemy->x < player.x) {
-        enemy->xSpeed = ENEMYXSPEED;
-      } else {
+  randomNumber = rand() % 5;
+  while(i < randomNumber) {
+    element = element->nextEnemyptr;
+    i++;
+  }
+
+  if(element == enemyListptr) {
+    element = element->nextEnemyptr;
+  }
+  enemy = &element->data;
+  
+  if(!enemy->isTrapped){
+    if(enemy->y < player.y) {
+      randomNumber = rand() % 2;
+
+      if(randomNumber == 0) {
         enemy->xSpeed = -ENEMYXSPEED;
+      } else {
+        enemy->xSpeed = ENEMYXSPEED;
       }
 
-      if(enemy->y < player.y && enemy->y == enemy->yMin) {
-        enemy->ySpeed = JUMPSPEED;
+      if(enemy->y == enemy->yMin) {
+        randomNumber = rand() % 2;
+        if(randomNumber == 0) {
+          enemy->ySpeed = JUMPSPEED;
+        }
       }
     }
-
-    element = element->nextEnemyptr;
   }
 }
 

@@ -93,7 +93,7 @@ void computePhysics(int timer) {
         moveGame(gameptr);
         glutPostRedisplay();
       } else if(timer == 1) {
-        glutTimerFunc(400, computePhysics, 1);
+        glutTimerFunc(200, computePhysics, 1);
         findEnemiesDirection(gameptr->enemyListptr, gameptr->player);
       }      
       break;
