@@ -1,6 +1,13 @@
 #ifndef _ENEMY_
 #define _ENEMY_
 
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include <stdbool.h>
 #include "player.h"
 
@@ -11,8 +18,11 @@ typedef struct {
   float ySpeed;
   float yMin;
   float size;
+  bool isFacingRight;
   bool isTrapped;
   int timeSinceTrapped;
+  GLuint *sprites;
+  int currentSprite;
 } Enemy;
 
 struct enemyNode {

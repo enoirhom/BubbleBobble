@@ -41,9 +41,16 @@ float calculateYMin(Player player, BubbleNode *bubbleListptr, char *map) {
 void movePlayer(Player *playerptr, BubbleNode *bubbleListptr, char *map) {
   playerptr->yMin = calculateYMin(*playerptr, bubbleListptr, map);
 
-  playerptr->x += playerptr->xSpeed;
   playerptr->ySpeed -= GRAVITY;
   playerptr->y += playerptr->ySpeed;
+  if(playerptr->xSpeed != 0) {
+    playerptr->x += playerptr->xSpeed;
+    playerptr->currentSprite += 1;
+    if(playerptr->currentSprite > 19) {
+      playerptr->currentSprite = 0;
+    }
+  }
+  
 
   if(playerptr->y <= playerptr->yMin) {
     playerptr->y = playerptr->yMin;

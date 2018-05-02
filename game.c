@@ -1,7 +1,8 @@
-#include "game.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "game.h"
+#include "image_loader.h"
 
 #define NBMAPCOL 25
 #define NBMAPROW 20
@@ -58,7 +59,14 @@ void loadLevel(Game *gameptr) {
 
   if(file != NULL) {
     if(gameptr->map == NULL) {
-      gameptr->map = malloc(NBMAPCOL * NBMAPROW * sizeof(char));      
+      gameptr->map = malloc(NBMAPCOL * NBMAPROW * sizeof(char));
+      // Create the player/ move it to the starting point
+      gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
+      // Load the textures in graphical memory
+      loadTextures(gameptr);
+    } else {
+      // Love the player to the starting point
+      gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
     }
 
     // Search for the right level. Marked with @level
@@ -77,7 +85,7 @@ void loadLevel(Game *gameptr) {
     while(j < nbEnemy) {
       float x, y;
       fscanf(file, "%f %f", &x, &y);
-      addEnemyElement(gameptr->enemyListptr, (Enemy){.x = x, .y = y, .xSpeed = 1.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isTrapped = false, .timeSinceTrapped = 0});
+      addEnemyElement(gameptr->enemyListptr, (Enemy){.x = x, .y = y, .xSpeed = 1.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .isTrapped = false, .timeSinceTrapped = 0, .sprites = gameptr->enemySprites, .currentSprite = 0});
       j++;
     }
 
@@ -94,10 +102,9 @@ void loadLevel(Game *gameptr) {
 
     fclose(file);
 
-    // Create the player/ move it to the starting point
-    gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0};
     // Remove the bubbles from previous level
     clearBubbleList(gameptr->bubbleListptr);
+    
   } else {
     printf("Erreur au chargement du fichier\n");
   }
@@ -251,8 +258,35 @@ void checkIfEnd(Game *gameptr) {
 
 // Add a bubble to the bubble list
 void addBubble(Game *gameptr) {
-  Bubble bubble = createBubble(gameptr->player.x, gameptr->player.y, gameptr->player.isFacingRight);
+  Bubble bubble = createBubble(gameptr->player.x, gameptr->player.y, gameptr->player.isFacingRight, gameptr->bubbleSprites);
   addBubbleElement(gameptr->bubbleListptr, bubble);
+}
+
+
+void loadTextures(Game *gameptr) {
+  gameptr->playerSprites[0] = loadBMP("./sprites/bob1.bmp");
+  gameptr->playerSprites[1] = loadBMP("./sprites/bob2.bmp");
+  gameptr->playerSprites[2] = loadBMP("./sprites/bob3.bmp");
+  gameptr->playerSprites[3] = loadBMP("./sprites/bob4.bmp");
+  gameptr->playerSprites[4] = loadBMP("./sprites/bob5.bmp");
+  gameptr->playerSprites[5] = loadBMP("./sprites/bob6.bmp");
+  gameptr->playerSprites[6] = loadBMP("./sprites/bob7.bmp");
+
+  gameptr->enemySprites[0] = loadBMP("./sprites/enemy1.bmp");
+  gameptr->enemySprites[1] = loadBMP("./sprites/enemy2.bmp");
+  gameptr->enemySprites[2] = loadBMP("./sprites/enemy3.bmp");
+  gameptr->enemySprites[3] = loadBMP("./sprites/enemy4.bmp");
+  gameptr->enemySprites[4] = loadBMP("./sprites/enemytrapped1.bmp");
+  gameptr->enemySprites[5] = loadBMP("./sprites/enemytrapped2.bmp");
+  gameptr->enemySprites[6] = loadBMP("./sprites/enemytrapped3.bmp");
+  gameptr->enemySprites[7] = loadBMP("./sprites/enemytrapped2.bmp");
+
+  gameptr->bubbleSprites[0] = loadBMP("./sprites/bubble1.bmp");
+  gameptr->bubbleSprites[1] = loadBMP("./sprites/bubble2.bmp");
+  gameptr->bubbleSprites[2] = loadBMP("./sprites/bubble3.bmp");
+  gameptr->bubbleSprites[3] = loadBMP("./sprites/bubble2.bmp");
+
+  gameptr->wallSprite = loadBMP("./sprites/wall.bmp");
 }
 
 

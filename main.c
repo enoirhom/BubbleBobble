@@ -37,12 +37,13 @@ int main(int argc, char **argv) {
   state = menu;
   gameptr = NULL;
   keyboard = (struct keyboard){.leftKeyPressed = false, .rightKeyPressed = false};
+  
 
   // Init GLUT and create Window
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
-  glutInitWindowSize(500, 400);
+  glutInitWindowSize(1000, 800);
   glutCreateWindow("Bubble Bobble");
   glutSetCursor(GLUT_CURSOR_NONE);
 
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-// Draws the elements on the screen
+// Draw the elements on the screen
 void display(void) {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -156,4 +157,5 @@ void specialKeyReleased(int key, int x, int y) {
       break;
   }
 }
+
 

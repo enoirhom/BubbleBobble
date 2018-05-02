@@ -1,19 +1,28 @@
 #ifndef _PLAYER_
 #define _PLAYER_
 
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include <stdbool.h>
 #include "bubble.h"
 
 typedef struct {
-  float x;
-  float y;
-  float xSpeed;
-  float ySpeed;
-  float yMin;
-  float size;
-  bool isFacingRight;
-  int timeSinceHit;
-} Player;
+  float x;              // x compound of the player position
+  float y;              // y compound of the player position
+  float xSpeed;         // Horizontal speed of the player
+  float ySpeed;         // Vertical speed of the player
+  float yMin;           // The minimum value the y compound of the player position can take depending of the current position
+  float size;           // Size of the hitbox of the player
+  bool isFacingRight;   // True if player is looking right, false if he is looking left
+  int timeSinceHit;     // Time (in images) since the last collision with an enemy
+  GLuint *sprites;      // Pointer to an array of TextureID's
+  int currentSprite;    // Number representing the index of the current sprite
+} Player;               // Structure containing all the needed data to represent the player
 
 void movePlayer(Player *player, BubbleNode *bubbleListptr, char *map);
 

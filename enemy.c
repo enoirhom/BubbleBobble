@@ -28,6 +28,7 @@ void enemyIsHit(Enemy *enemyptr) {
   enemyptr->ySpeed = 0.2;
   enemyptr->isTrapped = true;
   enemyptr->timeSinceTrapped = 300;
+  enemyptr->currentSprite = 24;
 }
 
 // Calculate the new position of each enemy
@@ -40,8 +41,15 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
     if(!enemy->isTrapped) {
       enemy->yMin = enemyCalculateYMin(*enemy, map);
 
-      // Move the enemy depending on its speeds
-      enemy->x += enemy->xSpeed;
+      if(enemy->xSpeed != 0) {
+        // Move the enemy depending on its speed
+        enemy->x += enemy->xSpeed;
+        enemy->currentSprite += 1;
+        if(enemy->currentSprite > 23) {
+          enemy->currentSprite = 0;
+        }
+      }
+
       enemy->ySpeed -= GRAVITY;
       enemy->y += enemy->ySpeed;
  
@@ -53,9 +61,11 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
 
       if(enemy->x < 20.0) {
         enemy->xSpeed = -enemy->xSpeed;
+        enemy->isFacingRight = !enemy->isFacingRight;
         enemy->x = 20.0;
       } else if(enemy->x > 460.0) {
         enemy->xSpeed = -enemy->xSpeed;
+        enemy->isFacingRight = !enemy->isFacingRight;
         enemy->x = 460.0;
       }
 
@@ -64,8 +74,14 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
       enemy->y += enemy->ySpeed;
       enemy->timeSinceTrapped -= 1;
 
+      enemy->currentSprite += 1;
+      if(enemy->currentSprite > 47) {
+        enemy->currentSprite = 24;
+      }
+
       if(enemy->timeSinceTrapped <= 0) {
         enemy->isTrapped = false;
+        enemy->currentSprite = 0;
       }
     }
     element = element->nextEnemyptr;
@@ -84,9 +100,9 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
     i++;
   }
 
-  if(element == enemyListptr) {
+  /*if(element == enemyListptr) {
     element = element->nextEnemyptr;
-  }
+  }*/
   enemy = &element->data;
   
   if(!enemy->isTrapped){
@@ -95,8 +111,10 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
 
       if(randomNumber == 0) {
         enemy->xSpeed = -ENEMYXSPEED;
+        enemy->isFacingRight = false;
       } else {
         enemy->xSpeed = ENEMYXSPEED;
+        enemy->isFacingRight = true;
       }
 
       if(enemy->y == enemy->yMin) {
@@ -118,7 +136,7 @@ EnemyNode *newEnemyList(void) {
   if(enemyNodeptr == NULL) {
     return NULL;
   } else {
-    enemyNodeptr->data = (Enemy){.x = 0.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .size = 0.0, .isTrapped = true, .timeSinceTrapped = 0};
+    enemyNodeptr->data = (Enemy){.x = 0.0, .y = 0.0, .xSpeed = 0.0, .ySpeed = 0.0, .size = 0.0, .isFacingRight = false, .isTrapped = true, .timeSinceTrapped = 0, .sprites = NULL};
     enemyNodeptr->nextEnemyptr = enemyNodeptr;
     enemyNodeptr->prevEnemyptr = enemyNodeptr;
   }

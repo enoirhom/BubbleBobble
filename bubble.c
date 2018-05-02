@@ -5,7 +5,7 @@
 #define BUBBLESLOWDOWN 0.4
 
 // Creae a bubble at the player position
-Bubble createBubble(float x, float y, bool isGoingRight) {
+Bubble createBubble(float x, float y, bool isGoingRight, GLuint *sprites) {
 	Bubble bubble;
 	int randomDuration;
 
@@ -15,6 +15,8 @@ Bubble createBubble(float x, float y, bool isGoingRight) {
 	bubble.size = 20.0;
 	randomDuration = rand() % 75;
 	bubble.duration = 550 + randomDuration;
+	bubble.sprites = sprites;
+	bubble.currentSprite = 0;
 
 	// Give the bubble a speed depending where the player is looking at
 	if(isGoingRight) {
@@ -35,6 +37,11 @@ void moveBubbles(BubbleNode *bubbleListptr) {
 		bubble->x += bubble->xSpeed;
 		bubble->y += bubble->ySpeed;
 		bubble->duration -= 1;
+
+		bubble->currentSprite += 1;
+		if(bubble->currentSprite > 39) {
+			bubble->currentSprite = 0;
+		}
 
 		if(bubble->xSpeed > 0) {
 			bubble->xSpeed -= BUBBLESLOWDOWN;

@@ -1,6 +1,13 @@
 #ifndef _GAME_
 #define _GAME_
 
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include "player.h"
 #include "enemy.h"
 #include "bubble.h"
@@ -22,6 +29,10 @@ typedef struct {
   int level;
   char levelText[MAXSCORELENGTH];
   char *map;
+  GLuint playerSprites[7];
+  GLuint enemySprites[8];
+  GLuint bubbleSprites[4];
+  GLuint wallSprite;
 } Game;
 
 typedef struct {
@@ -39,5 +50,6 @@ void checkIfEnd(Game *gameptr);
 void saveGame(Game *gameptr);
 void loadGame(Game **gameptr);
 void loadLevel(Game *gameptr);
+void loadTextures(Game *gameptr);
 
 #endif

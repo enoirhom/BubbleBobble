@@ -10,7 +10,7 @@
 #include "keyboard.h"
 #include "game.h"
 
-#define XSPEED 3.0
+#define XSPEED 2.0
 #define JUMPSPEED 10.0
 
 
