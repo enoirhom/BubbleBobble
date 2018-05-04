@@ -163,7 +163,7 @@ void loadGame(Game **gameptr) {
 }
 
 
-/********COLLISION HANDLING*********/
+/******** COLLISION HANDLING *********/
 
 // Check if the player collides with the enemy
 bool playerCollidesWithEnemy(Player player, Enemy enemy) {

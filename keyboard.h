@@ -10,8 +10,8 @@ enum state {
 };
 
 struct keyboard {
-	bool leftKeyPressed;
-	bool rightKeyPressed;
+	bool leftKeyPressed;    // Is true if the left arrow key is pressed, false if not
+	bool rightKeyPressed;   // Is true if the right arrow key is pressed, false if not
 };
 
 void gameKeyPressed(unsigned char key, Game *gameptr, enum state *state, int *choice);

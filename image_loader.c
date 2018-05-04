@@ -22,7 +22,7 @@ GLuint loadBMP(const char *filepath) {
 	}
 
 	fclose(file);
-
+    
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);

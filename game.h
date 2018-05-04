@@ -19,27 +19,27 @@
 
 
 typedef struct {
-  Player player;
-  EnemyNode *enemyListptr;
-  BubbleNode *bubbleListptr;
-  int score;
-  char scoreText[MAXSCORELENGTH];
-  int lives;
-  char livesText[MAXSCORELENGTH];
-  int level;
-  char levelText[MAXSCORELENGTH];
-  char *map;
-  GLuint playerSprites[7];
-  GLuint enemySprites[8];
-  GLuint bubbleSprites[4];
-  GLuint wallSprite;
+  Player player;                    // Hold the player's information
+  EnemyNode *enemyListptr;          // Pointer to the sentinel of enemies chained list
+  BubbleNode *bubbleListptr;        // Pointer to the sentinel of bubbles chained list
+  int score;                        // Current score of the player
+  char scoreText[MAXSCORELENGTH];   // String convertion of the player score, so it can be display in the window
+  int lives;                        // Remaining number of lives the player has
+  char livesText[MAXSCORELENGTH];   // String convertion of the player remaing lives, so it can be display in the window
+  int level;                        // Current level of the game
+  char levelText[MAXSCORELENGTH];   // String convertion of the game current level, so it can be display in the window
+  char *map;                        // Pointer to an array of char, representing the level's map ('0' = no wall, '1' = wall)
+  GLuint playerSprites[7];          // Array of the player textureID's
+  GLuint enemySprites[8];           // Array of enemies textureID's
+  GLuint bubbleSprites[4];          // Array of bubbles textureID's
+  GLuint wallSprite;                // Wall textureID
 } Game;
 
 typedef struct {
-	int game;
-	int score;
-	int lives;
-	int level;
+	int game;   // GameID
+	int score;  // Score to save
+	int lives;  // Remaining lives when saving
+	int level;  // Level when saving
 } Save;
 
 void newGame(Game **gameptr, int score, int lives, int level);

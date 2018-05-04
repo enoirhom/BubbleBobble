@@ -10,12 +10,12 @@
 
 
 typedef struct {
-	unsigned char header[54];
-	unsigned int dataPos;
-	unsigned int width;
-	unsigned int height;
-	unsigned int imageSize;
-	unsigned char *data;
+	unsigned char header[138];  // Hold the values of a .bmp file header
+	unsigned int dataPos;       // Hold the byte position of the first pixel in .bmp file
+	unsigned int width;         // Hold width of the image
+	unsigned int height;        // Hold height of the image
+	unsigned int imageSize;     // Hold the number of bytes the image contains
+	unsigned char *data;        // Pointer to the array of pixels
 } BMPImage;
 
 GLuint loadBMP(const char *filepath);

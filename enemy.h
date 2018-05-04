@@ -12,17 +12,17 @@
 #include "player.h"
 
 typedef struct {
-  float x;
-  float y;
-  float xSpeed;
-  float ySpeed;
-  float yMin;
-  float size;
-  bool isFacingRight;
-  bool isTrapped;
-  int timeSinceTrapped;
-  GLuint *sprites;
-  int currentSprite;
+  float x;              // x compound of the enemy position
+  float y;              // y compound of the enemy position
+  float xSpeed;         // Horizontal speed of the enemy
+  float ySpeed;         // Vertical speed of the enemy
+  float yMin;           // The minimum value the y compound of the enemy position can take depending of the current position
+  float size;           // Size of the hitbox (square) of the enemy
+  bool isFacingRight;   // True if the enemy is looking right, false if he is looking left
+  bool isTrapped;       // True if the enemy is trapped
+  int timeSinceTrapped; // Time ellapse (in images) since the enemy is trapped
+  GLuint *sprites;      // Pointer to an array of textuteID's
+  int currentSprite;    // Number representing the index of the current sprite
 } Enemy;
 
 struct enemyNode {

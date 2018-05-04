@@ -24,11 +24,11 @@ float enemyCalculateYMin(Enemy enemy, char *map) {
 
 // Change the enemy behavior when hit by a bubble
 void enemyIsHit(Enemy *enemyptr) {
-  enemyptr->xSpeed = 0.0;
-  enemyptr->ySpeed = 0.2;
-  enemyptr->isTrapped = true;
-  enemyptr->timeSinceTrapped = 300;
-  enemyptr->currentSprite = 24;
+  enemyptr->xSpeed = 0.0;               // Stop the enemy
+  enemyptr->ySpeed = 0.2;               // Make the enemy go up
+  enemyptr->isTrapped = true;           // Change the enemy status to trapped
+  enemyptr->timeSinceTrapped = 300;     // Start the trap timer
+  enemyptr->currentSprite = 24;         // Change the current sprite to the first trapped sprite
 }
 
 // Calculate the new position of each enemy
@@ -88,6 +88,19 @@ void moveEnemies(EnemyNode *enemyListptr, char *map) {
   }
 }
 
+// Decide if the enemy should go left or right randomly
+void goLeftOrRight(Enemy *enemy) {
+  int randomNumber = rand() % 2;        // Pick a random number between 0 and 1
+    
+  if(randomNumber == 0) {               //
+    enemy->xSpeed = -ENEMYXSPEED;       //
+    enemy->isFacingRight = false;       // Give the enemy a direction depending on randomNumber
+  } else {                              // Set the enemy direction
+    enemy->xSpeed = ENEMYXSPEED;        //
+    enemy->isFacingRight = true;        //
+  }
+}
+
 // Calculate a direction depending on the position of the player
 void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
   EnemyNode *element = enemyListptr->nextEnemyptr;
@@ -100,22 +113,11 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
     i++;
   }
 
-  /*if(element == enemyListptr) {
-    element = element->nextEnemyptr;
-  }*/
   enemy = &element->data;
   
   if(!enemy->isTrapped){
     if(enemy->y < player.y) {
-      randomNumber = rand() % 2;
-
-      if(randomNumber == 0) {
-        enemy->xSpeed = -ENEMYXSPEED;
-        enemy->isFacingRight = false;
-      } else {
-        enemy->xSpeed = ENEMYXSPEED;
-        enemy->isFacingRight = true;
-      }
+      goLeftOrRight(enemy);
 
       if(enemy->y == enemy->yMin) {
         randomNumber = rand() % 2;
@@ -123,11 +125,16 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
           enemy->ySpeed = JUMPSPEED;
         }
       }
+    } else {
+      if(enemy->xSpeed == 0.0) {
+        goLeftOrRight(enemy);
+      }
     }
   }
 }
 
-/********ENEMY CHAINED LIST********/
+
+/******** ENEMY CHAINED LIST ********/
 
 EnemyNode *newEnemyList(void) {
   EnemyNode *enemyNodeptr;

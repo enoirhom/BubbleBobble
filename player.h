@@ -17,12 +17,12 @@ typedef struct {
   float xSpeed;         // Horizontal speed of the player
   float ySpeed;         // Vertical speed of the player
   float yMin;           // The minimum value the y compound of the player position can take depending of the current position
-  float size;           // Size of the hitbox of the player
+  float size;           // Size of the hitbox (square) of the player
   bool isFacingRight;   // True if player is looking right, false if he is looking left
-  int timeSinceHit;     // Time (in images) since the last collision with an enemy
+  int timeSinceHit;     // Time ellapsed (in images) since the last collision with an enemy
   GLuint *sprites;      // Pointer to an array of TextureID's
   int currentSprite;    // Number representing the index of the current sprite
-} Player;               // Structure containing all the needed data to represent the player
+} Player;
 
 void movePlayer(Player *player, BubbleNode *bubbleListptr, char *map);
 
