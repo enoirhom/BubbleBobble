@@ -3,25 +3,28 @@
 #include "image_loader.h"
 
 
+BMPImage loadBMP(const char *filepath) {
+    FILE *file = fopen(filepath, "rb");
+    unsigned char header[138];
+    BMPImage image;
+    
+    fread(header, 1, 138, file);
+    
+    image.dataPos = *(int*)&(header[10]);
+    image.imageSize = *(int*)&(header[34]);
+    image.width = *(int*)&(header[18]);
+    image.height = *(int*)&(header[22]);
+    
+    image.data = malloc(image.imageSize);
+    fread(image.data, 1, image.imageSize, file);
+    
+    fclose(file);
+    
+    return image;
+}
 
-GLuint loadBMP(const char *filepath) {
-	FILE *file = fopen(filepath, "rb");
-	unsigned char header[138];
-	BMPImage image;
-
-	if(file != NULL) {
-		fread(header, 1, 138, file);
-
-		image.dataPos = *(int*)&(header[10]);
-		image.imageSize = *(int*)&(header[34]);
-		image.width = *(int*)&(header[18]);
-		image.height = *(int*)&(header[22]);
-
-		image.data = malloc(image.imageSize);
-		fread(image.data, 1, image.imageSize, file);
-	}
-
-	fclose(file);
+GLuint createTexture(const char *filepath) {
+    BMPImage image = loadBMP(filepath);
     
 	GLuint textureID;
 	glGenTextures(1, &textureID);

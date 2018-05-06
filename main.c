@@ -21,8 +21,8 @@ void keyPressed(unsigned char key, int x, int y);
 void specialKeyPressed(int key, int x, int y);
 void specialKeyReleased(int key, int x, int y);
 
-char mainMenuText[5][20] = {"Continuer", "Nouvelle partie", "Charger la partie", "Meilleurs scores", "Quitter"};
-char pauseMenuText[5][20] = {"Reprendre", "Sauvegarder", "Meilleurs scores", "Menu principal", "Quitter"};
+char mainMenuText[5][20] = {"Continuer", "Nouvelle partie", "Charger la partie", "Regles", "Quitter"};
+char pauseMenuText[5][20] = {"Reprendre", "Sauvegarder", "Regles", "Menu principal", "Quitter"};
 int menuChoice;
 
 enum state state;
@@ -74,10 +74,11 @@ void display(void) {
       displayMenu(mainMenuText, menuChoice);
       break;
     case pauseMenu:
-      displayGame(gameptr);
       displayMenu(pauseMenuText, menuChoice);
       break;
-
+    case regles:
+      displayRegles();
+      break;
   }
 
   glFlush();
@@ -90,7 +91,7 @@ void computePhysics(int timer) {
       if(timer == 0) {
         //Recall computePhysics in 16ms
         glutTimerFunc(16, computePhysics, 0);
-        moveGame(gameptr);
+        moveGame(gameptr, &state);
         glutPostRedisplay();
       } else if(timer == 1) {
         glutTimerFunc(200, computePhysics, 1);
@@ -101,6 +102,9 @@ void computePhysics(int timer) {
       glutPostRedisplay();
       break;
     case pauseMenu:
+      glutPostRedisplay();
+      break;
+    case regles:
       glutPostRedisplay();
       break;
   }
@@ -128,6 +132,9 @@ void keyPressed(unsigned char key, int x, int y) {
     case menu:
       menuKeyPressed(key, &state, menuChoice, &gameptr);
       break;
+    case regles:
+      reglesKeyPressed(&state);
+      break;
   }
 }
 
@@ -142,6 +149,8 @@ void specialKeyPressed(int key, int x, int y) {
     case menu:
       specialMenuKeyPressed(key, &menuChoice);
       break;
+    case regles:
+      break;
   }
 }
 
@@ -153,6 +162,8 @@ void specialKeyReleased(int key, int x, int y) {
     case pauseMenu:
       break;
     case menu:
+      break;
+    case regles:
       break;
   }
 }

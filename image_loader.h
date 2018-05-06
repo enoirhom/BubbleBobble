@@ -18,6 +18,7 @@ typedef struct {
 	unsigned char *data;        // Pointer to the array of pixels
 } BMPImage;
 
-GLuint loadBMP(const char *filepath);
+BMPImage loadBMP(const char *filepath);
+GLuint createTexture(const char *filepath);
 
 #endif

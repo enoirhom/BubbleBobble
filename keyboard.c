@@ -128,6 +128,11 @@ void pauseMenuKeyPressed(unsigned char key, enum state *state, int *choice, Game
 	}
 }
 
+void reglesKeyPressed(enum state *state) {
+    *state = menu;
+    computePhysics(-1);
+}
+
 // Handle special key pressures while being in the main menu
 void specialMenuKeyPressed(int key, int *choice){
 	switch(key) {
@@ -170,8 +175,10 @@ void menuMakeChoice(enum state *state, int choice, Game **gameptr) {
 		case 2:
 			loadGame(gameptr);
 			break;
-		// MEILLEURS SCORES
+		// REGLES
 		case 3:
+            *state = regles;
+            computePhysics(-1);
 			break;
 		// QUITTER
 		case 4: 
@@ -191,9 +198,10 @@ void pauseMenuMakeChoice(enum state *state, int *choice, Game **gameptr) {
 		case 1:
 			saveGame(*gameptr);
 			break;
-		// MEILLEURS SCORES
+		// REGLES
 		case 2:
-			// TO DO
+            *state = regles;
+            computePhysics(-1);
 			break;
 		// MENU PRINCIPAL
 		case 3:

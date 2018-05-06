@@ -8,12 +8,11 @@
 #define NBMAPROW 20
 
 
-void moveGame(Game *gameptr) {
+void moveGame(Game *gameptr, enum state *state) {
   moveBubbles(gameptr->bubbleListptr);
   movePlayer(&gameptr->player, gameptr->bubbleListptr, gameptr->map);
   moveEnemies(gameptr->enemyListptr, gameptr->map);
-  checkCollisions(gameptr);
-  checkIfEnd(gameptr);
+  checkCollisions(gameptr, state);
 }
 
 void convertIntToString(int score, char scoreText[MAXSCORELENGTH]) {
@@ -58,8 +57,6 @@ void loadLevel(Game *gameptr) {
   file = fopen(MAPFILE, "r");
 
   if(file != NULL) {
-    // Move the player to the starting point
-    gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
     if(gameptr->map == NULL) {
       gameptr->map = malloc(NBMAPCOL * NBMAPROW * sizeof(char));
       // Load the textures in graphical memory
@@ -97,6 +94,9 @@ void loadLevel(Game *gameptr) {
     }
 
     fclose(file);
+
+    // Move the player to the starting point
+    gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
 
     // Remove the bubbles from previous level
     clearBubbleList(gameptr->bubbleListptr);
@@ -172,7 +172,7 @@ bool bubbleCollidesWithEnemy(Bubble bubble, Enemy enemy) {
 }
 
 // Run through every enemy and check if they collide with the player
-void checkPlayerCollisions(Game *gameptr) {
+void checkPlayerCollisions(Game *gameptr, enum state *state) {
   Player *player = &gameptr->player;
   EnemyNode *element = gameptr->enemyListptr->nextEnemyptr;
 
@@ -186,7 +186,7 @@ void checkPlayerCollisions(Game *gameptr) {
         gameptr->score += 100;
         convertIntToString(gameptr->score, gameptr->scoreText);
         element = removeEnemyElement(element);
-      // If the isn't trapped, the player lose a live
+      // If the enemy isn't trapped, the player loses a live
       } else {
         if(player->timeSinceHit == 0) {
           gameptr->lives -= 1;
@@ -195,6 +195,7 @@ void checkPlayerCollisions(Game *gameptr) {
         }
         element = element->nextEnemyptr;
       }
+      checkIfEnd(gameptr, state);
     } else {
       element = element->nextEnemyptr;
     }
@@ -235,19 +236,21 @@ void checkEnemiesCollisions(Game *gameptr) {
   }
 }
 
-void checkCollisions(Game *gameptr) {
-  checkPlayerCollisions(gameptr);
+void checkCollisions(Game *gameptr, enum state *state) {
+  checkPlayerCollisions(gameptr, state);
   checkEnemiesCollisions(gameptr);
 }
 
 // Check there are still enemies in the current level. If not load the next level
-void checkIfEnd(Game *gameptr) {
+void checkIfEnd(Game *gameptr, enum state *state) {
   if(gameptr->enemyListptr->nextEnemyptr == gameptr->enemyListptr) {
     gameptr->level += 1;
     convertIntToString(gameptr->level, gameptr->levelText);
     gameptr->score += 1000;
     convertIntToString(gameptr->score, gameptr->scoreText);
     loadLevel(gameptr);
+  } else if(gameptr->lives <= 0) {
+      *state = menu;
   }
 }
 
@@ -259,29 +262,29 @@ void addBubble(Game *gameptr) {
 
 
 void loadTextures(Game *gameptr) {
-  gameptr->playerSprites[0] = loadBMP("./sprites/bob1.bmp");
-  gameptr->playerSprites[1] = loadBMP("./sprites/bob2.bmp");
-  gameptr->playerSprites[2] = loadBMP("./sprites/bob3.bmp");
-  gameptr->playerSprites[3] = loadBMP("./sprites/bob4.bmp");
-  gameptr->playerSprites[4] = loadBMP("./sprites/bob5.bmp");
-  gameptr->playerSprites[5] = loadBMP("./sprites/bob6.bmp");
-  gameptr->playerSprites[6] = loadBMP("./sprites/bob7.bmp");
+  gameptr->playerSprites[0] = createTexture("./sprites/bob1.bmp");
+  gameptr->playerSprites[1] = createTexture("./sprites/bob2.bmp");
+  gameptr->playerSprites[2] = createTexture("./sprites/bob3.bmp");
+  gameptr->playerSprites[3] = createTexture("./sprites/bob4.bmp");
+  gameptr->playerSprites[4] = createTexture("./sprites/bob5.bmp");
+  gameptr->playerSprites[5] = createTexture("./sprites/bob6.bmp");
+  gameptr->playerSprites[6] = createTexture("./sprites/bob7.bmp");
 
-  gameptr->enemySprites[0] = loadBMP("./sprites/enemy1.bmp");
-  gameptr->enemySprites[1] = loadBMP("./sprites/enemy2.bmp");
-  gameptr->enemySprites[2] = loadBMP("./sprites/enemy3.bmp");
-  gameptr->enemySprites[3] = loadBMP("./sprites/enemy4.bmp");
-  gameptr->enemySprites[4] = loadBMP("./sprites/enemytrapped1.bmp");
-  gameptr->enemySprites[5] = loadBMP("./sprites/enemytrapped2.bmp");
-  gameptr->enemySprites[6] = loadBMP("./sprites/enemytrapped3.bmp");
-  gameptr->enemySprites[7] = loadBMP("./sprites/enemytrapped2.bmp");
+  gameptr->enemySprites[0] = createTexture("./sprites/enemy1.bmp");
+  gameptr->enemySprites[1] = createTexture("./sprites/enemy2.bmp");
+  gameptr->enemySprites[2] = createTexture("./sprites/enemy3.bmp");
+  gameptr->enemySprites[3] = createTexture("./sprites/enemy4.bmp");
+  gameptr->enemySprites[4] = createTexture("./sprites/enemytrapped1.bmp");
+  gameptr->enemySprites[5] = createTexture("./sprites/enemytrapped2.bmp");
+  gameptr->enemySprites[6] = createTexture("./sprites/enemytrapped3.bmp");
+  gameptr->enemySprites[7] = createTexture("./sprites/enemytrapped2.bmp");
 
-  gameptr->bubbleSprites[0] = loadBMP("./sprites/bubble1.bmp");
-  gameptr->bubbleSprites[1] = loadBMP("./sprites/bubble2.bmp");
-  gameptr->bubbleSprites[2] = loadBMP("./sprites/bubble3.bmp");
-  gameptr->bubbleSprites[3] = loadBMP("./sprites/bubble2.bmp");
+  gameptr->bubbleSprites[0] = createTexture("./sprites/bubble1.bmp");
+  gameptr->bubbleSprites[1] = createTexture("./sprites/bubble2.bmp");
+  gameptr->bubbleSprites[2] = createTexture("./sprites/bubble3.bmp");
+  gameptr->bubbleSprites[3] = createTexture("./sprites/bubble2.bmp");
 
-  gameptr->wallSprite = loadBMP("./sprites/wall.bmp");
+  gameptr->wallSprite = createTexture("./sprites/wall.bmp");
 }
 
 

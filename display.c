@@ -6,15 +6,16 @@
 #endif
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "display.h"
+#include "image_loader.h"
 
 #define MAXSCORELENGTH 9
 #define TILESIZE 20
 #define MAPLENGHT 500
 #define NBMAPCOL 25
-
 
 
 void draw(float width, float height, float right, float left) {
@@ -134,6 +135,13 @@ void displayMenu(char mainMenuText[5][20], int playerChoice) {
     displayText(x, y, mainMenuText[i], GLUT_BITMAP_HELVETICA_18);
     y -= 25.0;
   }
+}
+
+void displayRegles() {
+    BMPImage image = loadBMP("./sprites/regles.bmp");
+    glRasterPos2f(0.0, 0.0);
+    glDrawPixels(image.width, image.height, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+    free(image.data);
 }
 
 // Display the score, level, and remaining lives

@@ -18,6 +18,10 @@
 #define MAXNAMELENGTH 20
 
 
+enum state {
+    menu, game, pauseMenu, regles
+};
+
 typedef struct {
   Player player;                    // Hold the player's information
   EnemyNode *enemyListptr;          // Pointer to the sentinel of enemies chained list
@@ -43,9 +47,9 @@ typedef struct {
 
 void newGame(Game **gameptr, int score, int lives, int level);
 void addBubble(Game *gameptr);
-void checkCollisions(Game *gameptr);
-void moveGame(Game *gameptr);
-void checkIfEnd(Game *gameptr);
+void checkCollisions(Game *gameptr, enum state *state);
+void moveGame(Game *gameptr, enum state *state);
+void checkIfEnd(Game *gameptr, enum state *state);
 void saveGame(Game *gameptr);
 void loadGame(Game **gameptr);
 void loadLevel(Game *gameptr);

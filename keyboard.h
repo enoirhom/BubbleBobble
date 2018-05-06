@@ -5,10 +5,6 @@
 #include <stdbool.h>
 
 
-enum state {
-  menu, game, pauseMenu
-};
-
 struct keyboard {
 	bool leftKeyPressed;    // Is true if the left arrow key is pressed, false if not
 	bool rightKeyPressed;   // Is true if the right arrow key is pressed, false if not
@@ -23,6 +19,7 @@ void specialMenuKeyPressed(int key, int *choice);
 void menuMakeChoice(enum state *state, int choice, Game **gameptr);
 void pauseMenuMakeChoice(enum state *state, int *choice, Game **gameptr);
 void startGame(enum state *state);
+void reglesKeyPressed(enum state *state);
 
 
 #endif
