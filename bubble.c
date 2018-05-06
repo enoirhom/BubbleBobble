@@ -45,7 +45,7 @@ void moveBubbles(BubbleNode *bubbleListptr) {
       bubble->x += bubble->xSpeed;              // Move the bubble depending on the x and y speeds
       bubble->y += bubble->ySpeed;
         
-      if(bubble->xSpeed > 0.0) {                // If the bubble is still moving horizontally, sloww it down
+      if(bubble->xSpeed > 0.0) {                // If the bubble is still moving horizontally, slow it down
         bubble->xSpeed -= BUBBLESLOWDOWN;
       } else if(bubble->xSpeed < 0.0) {
         bubble->xSpeed += BUBBLESLOWDOWN;

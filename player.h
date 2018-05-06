@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "bubble.h"
 
+
 typedef struct {
   float x;              // x compound of the player position
   float y;              // y compound of the player position

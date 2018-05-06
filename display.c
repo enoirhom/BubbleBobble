@@ -122,8 +122,8 @@ void displayText(float x, float y, const char *string, void *font) {
 void displayMenu(char mainMenuText[5][20], int playerChoice) {
   float x = 200.0, y = 265.0;
 
-  glColor3f(0.0, 0.0, 0.0);
-  drawRect(20.0, 20.0, 480.0, 380.0, false);    // Draw a background
+  glColor3f(0.5, 0.5, 0.5);
+  drawRect(20.0, 20.0, 460.0, 360.0, false);    // Draw a background
   for(int i = 0; i < 5; i++) {                  // Display every choice and colorize the current choice
     if(i == playerChoice) {
       glColor3f(1.0, 0.5, 0.1);

@@ -8,6 +8,7 @@
 
 // Find the lowest possible y position under the player (platform or bubble)
 float calculateYMin(Player player, BubbleNode *bubbleListptr, char *map) {
+  BubbleNode *element;
   float playerMiddle = player.x + (player.size / 2);
   int row = player.y / TILESIZE;
   int col = playerMiddle / TILESIZE;
@@ -21,7 +22,7 @@ float calculateYMin(Player player, BubbleNode *bubbleListptr, char *map) {
 
   yMin = (float)((i / NBMAPCOL) * TILESIZE) + TILESIZE;
 
-  BubbleNode *element = bubbleListptr->nextBubbleptr;
+  element = bubbleListptr->nextBubbleptr;
 
   while(element != bubbleListptr) {
     if(playerMiddle > element->data.x && playerMiddle < (element->data.x + element->data.size)) {
@@ -50,7 +51,6 @@ void movePlayer(Player *playerptr, BubbleNode *bubbleListptr, char *map) {
       playerptr->currentSprite = 0;
     }
   }
-  
 
   if(playerptr->y <= playerptr->yMin) {
     playerptr->y = playerptr->yMin;

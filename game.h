@@ -36,7 +36,6 @@ typedef struct {
 } Game;
 
 typedef struct {
-	int game;   // GameID
 	int score;  // Score to save
 	int lives;  // Remaining lives when saving
 	int level;  // Level when saving

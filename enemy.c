@@ -125,9 +125,17 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
           enemy->ySpeed = JUMPSPEED;
         }
       }
-    } else {
+    } else if(enemy->y > player.y){
       if(enemy->xSpeed == 0.0) {
         goLeftOrRight(enemy);
+      }
+    } else {
+      if(enemy->x > player.x) {
+        enemy->xSpeed = -ENEMYXSPEED;
+        enemy->isFacingRight = false;
+      } else {
+        enemy->xSpeed = ENEMYXSPEED;
+        enemy->isFacingRight = true;
       }
     }
   }
@@ -136,7 +144,7 @@ void findEnemiesDirection(EnemyNode *enemyListptr, Player player) {
 
 /******** ENEMY CHAINED LIST ********/
 
-EnemyNode *newEnemyList(void) {
+EnemyNode *newEnemyList() {
   EnemyNode *enemyNodeptr;
   enemyNodeptr = malloc(sizeof(EnemyNode));
 

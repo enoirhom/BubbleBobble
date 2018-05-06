@@ -58,15 +58,12 @@ void loadLevel(Game *gameptr) {
   file = fopen(MAPFILE, "r");
 
   if(file != NULL) {
+    // Move the player to the starting point
+    gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
     if(gameptr->map == NULL) {
       gameptr->map = malloc(NBMAPCOL * NBMAPROW * sizeof(char));
-      // Create the player/ move it to the starting point
-      gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
       // Load the textures in graphical memory
       loadTextures(gameptr);
-    } else {
-      // Love the player to the starting point
-      gameptr->player = (Player){.x = 40.0, .y = 30.0, .xSpeed = 0.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .timeSinceHit = 0, .sprites = gameptr->playerSprites, .currentSprite = 0};
     }
 
     // Search for the right level. Marked with @level
@@ -88,7 +85,6 @@ void loadLevel(Game *gameptr) {
       addEnemyElement(gameptr->enemyListptr, (Enemy){.x = x, .y = y, .xSpeed = 1.0, .ySpeed = 0.0, .yMin = 0.0, .size = 20.0, .isFacingRight = true, .isTrapped = false, .timeSinceTrapped = 0, .sprites = gameptr->enemySprites, .currentSprite = 0});
       j++;
     }
-
 
     // Read the map
     fscanf(file, "%c", &c);
@@ -131,7 +127,7 @@ void newGame(Game **gameptr, int score, int lives, int level) {
 // Save the main information about the game in a binary file
 void saveGame(Game *gameptr) {
   FILE *file;
-  Save save = (Save){.game = 1, .score = gameptr->score, .lives = gameptr->lives, .level = gameptr->level};
+  Save save = (Save){.score = gameptr->score, .lives = gameptr->lives, .level = gameptr->level};
 
 
   file = fopen(SAVINGSFILE, "wb");
@@ -196,7 +192,6 @@ void checkPlayerCollisions(Game *gameptr) {
           gameptr->lives -= 1;
           convertIntToString(gameptr->lives, gameptr->livesText);
           player->timeSinceHit = 60;
-          printf("%i\n", gameptr->lives);
         }
         element = element->nextEnemyptr;
       }

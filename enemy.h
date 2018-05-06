@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "player.h"
 
+
 typedef struct {
   float x;              // x compound of the enemy position
   float y;              // y compound of the enemy position
@@ -26,9 +27,9 @@ typedef struct {
 } Enemy;
 
 struct enemyNode {
-	Enemy data;
-	struct enemyNode *nextEnemyptr;
-	struct enemyNode *prevEnemyptr;
+  Enemy data;
+  struct enemyNode *nextEnemyptr;
+  struct enemyNode *prevEnemyptr;
 };
 
 typedef struct enemyNode EnemyNode;
@@ -36,7 +37,7 @@ typedef struct enemyNode EnemyNode;
 void moveEnemies(EnemyNode *enemyListptr, char *map);
 void findEnemiesDirection(EnemyNode *enemyListptr, Player player);
 void enemyIsHit(Enemy *enemy);
-EnemyNode *newEnemyList(void);
+EnemyNode *newEnemyList();
 void addEnemyElement(EnemyNode *enemyNodeptr, Enemy enemy);
 EnemyNode *removeEnemyElement(EnemyNode *enemyNodeptr);
 

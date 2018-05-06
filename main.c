@@ -12,7 +12,6 @@
 #include "game.h"
 #include "display.h"
 #include "keyboard.h"
-#include "menu.h"
 
 
 void display(void);

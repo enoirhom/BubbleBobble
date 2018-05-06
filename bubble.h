@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 
+
 typedef struct {
   float x;              // x compound of the bubble position
   float y;              // y compound of the bubble position
